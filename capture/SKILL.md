@@ -98,7 +98,7 @@ capture 可以回写：
 
 1. 先问："以后在本项目哪个场景会复用？"——答不上来则不写。
 2. 拒绝泛化教程知识，判断：是项目特有还是通用？通用不写。
-3. 查是否已有同主题文件（`find docs/ -name "*.md" | xargs grep -l "<topic>"`）。
+3. 查是否已有同主题文件：`rg -l "<topic>" docs/ 2>/dev/null || true`（docs/ 不存在或无匹配都安全；无 `rg` 时退到 `grep -rl "<topic>" docs/ 2>/dev/null || true`）。
 4. 按目标位置表选唯一路径，创建或更新。
 5. 写短产物：reference 优于 recopy，结论优于过程叙事。
 6. 回报绝对路径。

@@ -6,6 +6,8 @@
 
 借鉴 [superpower](https://github.com/obra) / [mattpocock](https://github.com/mattpocock) / get-shit-done / gstack / everything-claude-code 等社区 skill 的优秀思想，但**不是温柔的协助式 skill 包**——它默认会挑战你的假设、要求新鲜验证证据、拒绝沉淀 LLM 能直接回答的知识。
 
+> 借鉴明细见 [来源对照表](#来源对照表)：每个来源借了哪些点、落到哪个 skill、和原作的差异。
+
 ---
 
 ## 架构
@@ -35,7 +37,7 @@
 | Skill | 职责 |
 |---|---|
 | **os** | 路由总线；把用户意图映射到具体 skill 序列 |
-| **setup-os** | 新 repo 首次初始化 Karpathy 风格 AGENTS.md（`disable-model-invocation`） |
+| **setup-os** | 新 repo 首次初始化 Karpathy 风格 AGENTS.md（带 `disable-model-invocation`；该字段 Claude Code 识别，其它平台不识别，但首句已用「手动运行」做跨平台兜底） |
 | **handoff** | 上下文耗尽 / 切换 agent 时写持久化交接文档 |
 
 ### 立项 Triage
@@ -90,11 +92,32 @@
 | 5 | 验证是闸门（拒绝"应该""看起来"） | superpower |
 | 6 | 元递归（sediment / capture 能回写约定） | everything-claude-code |
 
+## 来源对照表
+
+只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · GSD 中 · mattpocock 中 · gstack 低（默认栈未填写） · everything-claude-code 低（无完整 hooks/commands 闭环）。
+
+| 来源 | 借鉴点 | 落到的 skill | 与原作的差异 |
+|---|---|---|---|
+| **superpower**（[obra/superpowers](https://github.com/obra)） | 新鲜验证证据 / 拒绝"应该""看起来" | `verify` | 中文重写、绑定 `ship` 闸门 |
+| superpower | 红绿先于代码 | `tdd` | 没硬卡"必须先写测试"，留用户跳过口 |
+| superpower | 根因定位、最快反馈环、一次一个变量 | `diagnose` | 强调"可证伪假设"措辞 |
+| superpower | subagent-driven review | `grill` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
+| **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 20 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
+| **gstack** | opinionated default stack | `rfc/SKILL.md` 默认栈表 | **当前为空占位**，未真正落地，详见 rfc skill 中的状态说明 |
+| gstack | 外部 codex 调用思路 | `grill` 的 `--external` 模式 | 仅伪流程示意，未做完整集成 |
+| **mattpocock** | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
+| **everything-claude-code** | 元递归：skill 能回写约定 | `capture`（项目向） / `sediment`（个人向） | **未实现完整 hooks/commands/rules 闭环**，仅写约定文件 |
+| everything-claude-code | description 字段即触发器 | `setup-os` 不复制 skill 路由表的设计 | 借了"description 优先"，没借自动注入机制 |
+
+仍是**理念借鉴**而非可执行复刻的部分：mattpocock 的具体课程对照、gstack 的实际栈、everything-claude-code 的 hooks 自动化。这些位置已在对应 skill 文件中标注 `<待填>` 或"未实现"。
+
 ## 安装
 
-三种方式，按你的使用场景选。
+三种方式，按你的使用场景选。**当前推荐方式 B 或 C**；方式 A 的 marketplace 元数据尚未发布。
 
-### 方式 A：Claude Code Plugin（最优雅）
+### 方式 A：Claude Code Plugin（计划中，尚未发布）
+
+> ⚠️ 本仓库尚未发布为 Claude Code marketplace（`.claude-plugin/marketplace.json` 等元数据未建立）。下面的命令是**目标形态**，照抄当前会失败。等发布后会移除本警告。
 
 ```bash
 # 把本仓库注册为 marketplace
@@ -104,7 +127,7 @@
 /plugin install initxy-skills@initxy-skills
 ```
 
-Claude Code 自动管理；后续 `/plugin update` 即可升级。
+发布后 Claude Code 自动管理；后续 `/plugin update` 即可升级。
 
 ### 方式 B：脚本批量拷贝（适合需要 codex 兼容）
 

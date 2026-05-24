@@ -8,7 +8,10 @@ description: 对产物（idea/spec/plan/design/rfc）做对抗式追问与红队
 ## 铁律
 
 1. **只攻不守**：不给修改建议，不给替代方案，只暴露问题。发现漏洞就戳破，不温柔。
-2. **必须 spawn skeptic**：主 agent 不能自己扮坏人——因为已知作者思路，容易手软。必须 spawn skeptic subagent 或调用外部 codex，否则本次 grill 无效。
+2. **优先用独立 skeptic**：主 agent 已知作者思路，容易手软。按下面顺序降级，每一步失败才走下一步：
+   1) spawn skeptic subagent（如 Claude Code 的 Agent / general-purpose）；
+   2) 调外部 `codex` CLI；
+   3) **fallback：主 agent 自审**——但必须在输出顶部加 `> ⚠️ 本次 grill 在无独立 skeptic 环境运行，作者偏见未消除，建议补一轮人工独立 review。`，且每条 attack 都要附「自我反驳点」说明自己最可能漏掉什么。
 3. **不给结论**：呈现 attack points 后停下，不替用户决定改/弃/推进。
 
 ## 何时不用我
@@ -34,9 +37,10 @@ description: 对产物（idea/spec/plan/design/rfc）做对抗式追问与红队
 
 | 模式 | 触发方式 | 说明 |
 |---|---|---|
-| 默认 | 无参数 | spawn general-purpose subagent 作为 skeptic |
-| `--external` | 用户指定 | 探测 codex CLI，调外部 review；不可用则静默回退 subagent |
-| `--both` | 用户指定 | subagent + codex 都跑，合并输出 |
+| 默认 | 无参数 | spawn general-purpose subagent 作为 skeptic；如平台无 Agent 工具，降级到 codex；再不行则主 agent 自审并打偏见警告 |
+| `--external` | 用户指定 | 探测 codex CLI，调外部 review；不可用则静默回退 subagent，再不行回退主 agent 自审 |
+| `--both` | 用户指定 | subagent + codex 都跑，合并输出；任一不可用则记录原因并继续另一路 |
+| `--self` | 用户指定 | 直接走主 agent 自审 fallback（用户明知偏见、只需结构化结果时） |
 
 **步骤 3：spawn skeptic subagent（借鉴 superpower）**
 
@@ -77,6 +81,14 @@ else
   echo "[grill] codex not found, falling back to subagent"
 fi
 ```
+
+**步骤 4b：主 agent 自审 fallback**
+
+仅在 subagent 与 codex 都不可用，或显式 `--self` 时执行。主 agent 必须：
+
+1. 强制输出顶部加一行警告：`> ⚠️ 本次 grill 在无独立 skeptic 环境运行，作者偏见未消除，建议补一轮人工独立 review。`
+2. 每条 Attack 额外加 `- 自我反驳点：<我作为作者最可能漏掉什么——具体到原因>`，逼自己跳出作者视角。
+3. 检查清单：① 时间/成本估计是否过度乐观；② 是否存在「这不就是 XX 吗」的简化反例；③ 用户/场景假设是否需要数据支撑；④ 失败模式与回滚是否有空缺；⑤ 是否在偷换名词（同名不同义）。
 
 **步骤 5：结构化呈现**
 

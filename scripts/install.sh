@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-bundle="core"
+bundle="all"
 target="codex-user"
 
 while [[ $# -gt 0 ]]; do
@@ -17,11 +17,15 @@ while [[ $# -gt 0 ]]; do
     -h|--help)
       cat <<'EOF'
 Usage:
-  scripts/install.sh --bundle core|engineering|memory|all --target codex-user|claude-user|codex-project|claude-project
+  scripts/install.sh [--bundle control|triage|define|design|build|ship|learn|all] [--target codex-user|claude-user|codex-project|claude-project]
+
+Defaults:
+  --bundle all
+  --target codex-user
 
 Examples:
-  scripts/install.sh --bundle all --target codex-user
-  scripts/install.sh --bundle core --target claude-project
+  scripts/install.sh --bundle all --target claude-user
+  scripts/install.sh --bundle ship --target claude-project
 EOF
       exit 0
       ;;

@@ -1,6 +1,9 @@
 ---
 name: setup-os
 description: 在新 repo 里初始化 initxy-skills 的项目约定：单文件 AGENTS.md（Karpathy 风格 onboarding 文档）。每个 repo 首次接入时手动运行一次；缺失 AGENTS.md / CLAUDE.md 时补跑。触发词：初始化项目、setup os、项目结构、添加 agent 指引、AGENTS.md。
+# disable-model-invocation 是 Claude Code 专用字段：阻止模型因 description 关键词
+# 命中就自动触发本 skill，必须由用户显式运行。其它平台（Codex 等）目前不识别该字段，
+# 因此 description 首句已用「手动运行」给出跨平台兜底语义。
 disable-model-invocation: true
 ---
 
