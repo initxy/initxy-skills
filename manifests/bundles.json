@@ -1,0 +1,58 @@
+{
+  "control": [
+    "os",
+    "setup-os",
+    "handoff"
+  ],
+  "triage": [
+    "assess",
+    "grill"
+  ],
+  "define": [
+    "clarify",
+    "decide"
+  ],
+  "design": [
+    "design",
+    "rfc",
+    "refactor"
+  ],
+  "build": [
+    "plan",
+    "tdd",
+    "diagnose"
+  ],
+  "ship": [
+    "verify",
+    "review",
+    "ship"
+  ],
+  "learn": [
+    "scan",
+    "learn",
+    "capture",
+    "sediment"
+  ],
+  "all": [
+    "os",
+    "setup-os",
+    "handoff",
+    "assess",
+    "grill",
+    "clarify",
+    "decide",
+    "design",
+    "rfc",
+    "refactor",
+    "plan",
+    "tdd",
+    "diagnose",
+    "verify",
+    "review",
+    "ship",
+    "scan",
+    "learn",
+    "capture",
+    "sediment"
+  ]
+}

@@ -1,0 +1,10 @@
+.DS_Store
+*.backup-*/
+.claude/
+node_modules/
+*.tmp
+*.swp
+.env
+.env.local
+__pycache__/
+*.pyc

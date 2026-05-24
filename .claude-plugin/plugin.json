@@ -1,0 +1,40 @@
+{
+  "name": "initxy-skills",
+  "version": "0.2.0",
+  "description": "个人 agent 操作系统 skill 包：YC/grill 立项、详细技术评审、TDD、发布、数字自我沉淀。",
+  "author": {
+    "name": "initxy"
+  },
+  "license": "MIT",
+  "keywords": [
+    "skills",
+    "工作流",
+    "tdd",
+    "grill",
+    "rfc",
+    "sediment",
+    "personal-os"
+  ],
+  "skills": [
+    "./os",
+    "./setup-os",
+    "./handoff",
+    "./assess",
+    "./grill",
+    "./clarify",
+    "./decide",
+    "./design",
+    "./rfc",
+    "./refactor",
+    "./plan",
+    "./tdd",
+    "./diagnose",
+    "./verify",
+    "./review",
+    "./ship",
+    "./scan",
+    "./learn",
+    "./capture",
+    "./sediment"
+  ]
+}
