@@ -125,7 +125,6 @@ diagnose -> tdd -> handoff
 - `writing-fragments`：追问并收集写作 fragments。
 - `writing-shape`：把原始材料塑造成可发布文章。
 
-## 参考与协议
+## 参考仓库
 
-- 参考仓库：[mattpocock/skills](https://github.com/mattpocock/skills)
-- 协议：见 [LICENSE](./LICENSE)
+- [mattpocock/skills](https://github.com/mattpocock/skills)
