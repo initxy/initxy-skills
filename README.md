@@ -2,7 +2,7 @@
 
 > 个人 agent 操作系统 skill 包：从**立项**到**沉淀**，覆盖软件工程全流程。
 
-**20 个 skill，6 个阶段，3 层架构**。专为重视**详细技术评审**、**对抗式审查**、**数字自我沉淀**的工作流而生。
+**23 个 skill，6 个阶段，3 层架构**。专为重视**详细技术评审**、**对抗式审查**、**数字自我沉淀**的工作流而生。
 
 借鉴 [superpower](https://github.com/obra) / [mattpocock](https://github.com/mattpocock) / get-shit-done / gstack / everything-claude-code 等社区 skill 的优秀思想，但**不是温柔的协助式 skill 包**——它默认会挑战你的假设、要求新鲜验证证据、拒绝沉淀 LLM 能直接回答的知识。
 
@@ -14,21 +14,19 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  控制面（3）                                                  │
+│  控制面（4）                                                  │
 │   os ─────────── 路由总线，把意图映射到具体 skill              │
 │   setup-os ───── repo 首次初始化（单文件 AGENTS.md）           │
 │   handoff ────── 跨 session 接力，写持久化交接文档            │
+│   caveman ────── 极简压缩输出模式                              │
 └─────────────────────────────────────────────────────────────┘
               ↓
-┌──────────┬──────────┬──────────┬──────────┬──────────┬──────────┐
-│ 1. 立项  │ 2. 定义  │ 3. 设计  │ 4. 构建  │ 5. 发布  │ 6. 沉淀  │
-│ Triage   │ Define   │ Design   │ Build    │ Ship     │ Learn    │
-├──────────┼──────────┼──────────┼──────────┼──────────┼──────────┤
-│ assess   │ clarify  │ design   │ plan     │ verify   │ scan     │
-│ (yc/roi) │ decide   │ rfc      │ tdd      │ review   │ learn    │
-│          │          │ refactor │ diagnose │ ship     │ capture  │
-│ grill ◄──┴─────────cross-cutting─────────┘          │ sediment │
-└──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
+1. 立项 Triage: assess, grill
+2. 定义 Define: clarify, decide
+3. 设计 Design: design, rfc, refactor, zoom-out, improve-codebase-architecture
+4. 构建 Build: plan, tdd, diagnose
+5. 发布 Ship: verify, review, ship
+6. 沉淀 Learn: scan, learn, capture, sediment
 ```
 
 ## 仓库目录
@@ -37,10 +35,10 @@ skill 文件按 6 阶段分组放在 `skills/<category>/<skill>/`：
 
 ```
 skills/
-  control/    os, setup-os, handoff
+  control/    os, setup-os, handoff, caveman
   triage/     assess, grill
   define/     clarify, decide
-  design/     design, rfc, refactor
+  design/     design, rfc, refactor, zoom-out, improve-codebase-architecture
   build/      plan, tdd, diagnose
   ship/       verify, review, ship
   learn/      scan, learn, capture, sediment
@@ -57,7 +55,7 @@ skills/
 | `scripts/` | 可执行的小工具，用于确定性操作 |
 | `templates/` | 写入项目的模板文件 |
 
-## 20 个 skill 清单
+## 23 个 skill 清单
 
 ### 控制面
 | Skill | 职责 |
@@ -65,6 +63,7 @@ skills/
 | **os** | 路由总线；把用户意图映射到具体 skill 序列 |
 | **setup-os** | 新 repo 首次初始化 Karpathy 风格 AGENTS.md（带 `disable-model-invocation`；该字段 Claude Code 识别，其它平台不识别，但首句已用「手动运行」做跨平台兜底） |
 | **handoff** | 上下文耗尽 / 切换 agent 时写持久化交接文档 |
+| **caveman** | 触发后持续生效的极简沟通模式，压缩废话但保留技术准确性 |
 
 ### 立项 Triage
 | Skill | 职责 |
@@ -84,6 +83,8 @@ skills/
 | **design** | 轻型方案草图（1-3 模块、几天能完成、私下探索） |
 | **rfc** | **重型技术评审**：模块 / 技术栈 / 数据模型 / 数据流 / API 契约 / NFR / 失败模式 / 可观测性 / 安全 / 成本。完整模板见 [`skills/design/rfc/templates/full-rfc.md`](skills/design/rfc/templates/full-rfc.md)。高影响 RFC **未被 `grill --redteam` 不算 accepted** |
 | **refactor** | 存量代码结构改造（深浅模块 / 删除测试 / 接缝） |
+| **zoom-out** | 陌生代码区高层地图：入口 / 调用方 / 依赖 / 数据流 / 接缝 |
+| **improve-codebase-architecture** | 主动架构体检：扫描浅模块、泄漏 seam、低局部性区域，输出 deepening candidates |
 
 ### 构建 Build
 | Skill | 职责 |
@@ -120,7 +121,7 @@ skills/
 
 ## 来源对照表
 
-只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · GSD 中 · mattpocock 中 · gstack 中低（技术栈来源规则已落地，gstack CLI/评审军团未复刻） · everything-claude-code 低（无完整 hooks/commands 闭环）。
+只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · mattpocock 高（未复刻 setup / issue tracker 闭环）· GSD 中 · gstack 中低（技术栈来源规则已落地，gstack CLI/评审军团未复刻） · everything-claude-code 低（无完整 hooks/commands 闭环）。
 
 | 来源 | 借鉴点 | 落到的 skill | 与原作的差异 |
 |---|---|---|---|
@@ -128,11 +129,14 @@ skills/
 | superpower | 红绿先于代码 | `tdd` | 没硬卡"必须先写测试"，留用户跳过口 |
 | superpower | 根因定位、最快反馈环、一次一个变量 | `diagnose` | 强调"可证伪假设"措辞 |
 | superpower | subagent-driven review | `grill --redteam` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
-| **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 20 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
+| **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 23 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
 | **gstack** | 技术栈要 opinionated，偏离须有证据 | `rfc` 的「技术栈来源」规则 | 不内置假默认栈；优先读项目现有栈 / ADR / 个人默认笔记 |
 | gstack | 外部 codex 调用思路 | `grill --external` 模式 | 仅提供调用路径和降级规则，未复刻 gstack CLI |
 | **mattpocock** | 逐问对齐、public interface、深模块 | `grill --align` / `tdd` / `refactor` | 没复刻完整 issue tracker / CONTEXT inline 更新闭环 |
 | mattpocock | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
+| mattpocock | 极简输出持续模式 | `caveman` | 中文化触发词；保留安全/不可逆操作的完整表达例外 |
+| mattpocock | 陌生代码区上升一层看地图 | `zoom-out` | 从一句 prompt 扩成固定输出：入口、调用方、依赖、数据流、接缝、风险点 |
+| mattpocock | 深模块 / 浅模块架构体检 | `improve-codebase-architecture` | 保留 deepening candidates 和 HTML 报告；不自动写 CONTEXT/ADR，先让用户选择候选 |
 | **everything-claude-code** | 元递归：skill 能回写约定 | `capture`（项目向） / `sediment`（个人向） | **未实现完整 hooks/commands/rules 闭环**，仅写约定文件 |
 | everything-claude-code | description 字段即触发器 | `setup-os` 不复制 skill 路由表的设计 | 借了"description 优先"，没借自动注入机制 |
 

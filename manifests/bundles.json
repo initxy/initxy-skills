@@ -2,7 +2,8 @@
   "control": [
     "control/os",
     "control/setup-os",
-    "control/handoff"
+    "control/handoff",
+    "control/caveman"
   ],
   "triage": [
     "triage/assess",
@@ -15,7 +16,9 @@
   "design": [
     "design/design",
     "design/rfc",
-    "design/refactor"
+    "design/refactor",
+    "design/zoom-out",
+    "design/improve-codebase-architecture"
   ],
   "build": [
     "build/plan",
@@ -37,6 +40,7 @@
     "control/os",
     "control/setup-os",
     "control/handoff",
+    "control/caveman",
     "triage/assess",
     "triage/grill",
     "define/clarify",
@@ -44,6 +48,8 @@
     "design/design",
     "design/rfc",
     "design/refactor",
+    "design/zoom-out",
+    "design/improve-codebase-architecture",
     "build/plan",
     "build/tdd",
     "build/diagnose",
