@@ -6,38 +6,45 @@
 
 ## 怎么安装
 
-```bash
-# 安装到 Claude: ~/.claude/skills/
-./scripts/install.sh
-
-# 安装到 Codex: ~/.codex/skills/
-./scripts/install.sh --to codex
-
-# 只安装工程类 skill
-./scripts/install.sh --bundle engineering
-```
-
-可用 bundle：
-
-- `engineering`：工程研发主流程。
-- `productivity`：沟通、交接、写 skill。
-- `writing`：文章写作、编辑和 Obsidian。
-- `all`：全部安装，默认推荐。
+依赖：`bash`、`jq`。远程安装还需要 `curl`、`tar`。
 
 远程安装：
 
 ```bash
-# 默认安装到 Claude，安装 all bundle
+# 默认：安装 all bundle 到 ~/.claude/skills/
 curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
 
-# 安装到 Codex
+# 安装到 Codex: ~/.codex/skills/
 curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex
+```
 
-# 只安装工程类 skill
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --bundle engineering
+本地安装：
 
-# 安装到 Codex，并只安装 productivity bundle
+```bash
+# 默认：安装 all bundle 到 ~/.claude/skills/
+./scripts/install.sh
+
+# 安装到 Codex: ~/.codex/skills/
+./scripts/install.sh --to codex
+```
+
+常用选项：
+
+- `--to claude|codex`：安装目标，默认 `claude`。
+- `--bundle engineering|productivity|writing|all`：安装范围，默认 `all`。
+- `--project`：安装到当前项目的 `./.<agent>/skills/`，不加则安装到用户目录。
+
+示例：
+
+```bash
+# 只安装工程类 skill 到 Claude
+./scripts/install.sh --bundle engineering
+
+# 安装 productivity bundle 到 Codex
 curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex --bundle productivity
+
+# 安装到当前项目
+./scripts/install.sh --to codex --project
 ```
 
 ## 怎么使用
