@@ -2,7 +2,7 @@
   "name": "initxy-skills",
   "version": "0.2.0",
   "description": "个人 agent 操作系统 skill 包：YC/grill 立项、详细技术评审、TDD、发布、数字自我沉淀。",
-  "skills": "./",
+  "skills": "./skills",
   "interface": {
     "displayName": "initxy Skills",
     "shortDescription": "个人 agent 操作系统：立项 / 定义 / 设计 / 构建 / 发布 / 沉淀，6 阶段 20 skill。",

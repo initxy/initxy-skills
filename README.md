@@ -31,6 +31,23 @@
 └──────────┴──────────┴──────────┴──────────┴──────────┴──────────┘
 ```
 
+## 仓库目录
+
+skill 文件按 6 阶段分组放在 `skills/<category>/<skill>/`：
+
+```
+skills/
+  control/    os, setup-os, handoff
+  triage/     assess, grill
+  define/     clarify, decide
+  design/     design, rfc, refactor
+  build/      plan, tdd, diagnose
+  ship/       verify, review, ship
+  learn/      scan, learn, capture, sediment
+```
+
+安装时**不会**在目标目录保留这层 `category/` 前缀——Claude/Codex 都会拿到平铺的 `~/.<agent>/skills/<skill>/`。分组只用于源仓库阅读。
+
 ## 20 个 skill 清单
 
 ### 控制面
@@ -56,7 +73,7 @@
 | Skill | 职责 |
 |---|---|
 | **design** | 轻型方案草图（1-3 模块、几天能完成、私下探索） |
-| **rfc** | **重型技术评审**：模块 / 技术栈 / 数据模型 / 数据流 / API 契约 / NFR / 失败模式 / 可观测性 / 安全 / 成本。完整模板见 [`rfc/templates/full-rfc.md`](rfc/templates/full-rfc.md)。**未被 grill 不算定稿** |
+| **rfc** | **重型技术评审**：模块 / 技术栈 / 数据模型 / 数据流 / API 契约 / NFR / 失败模式 / 可观测性 / 安全 / 成本。完整模板见 [`skills/design/rfc/templates/full-rfc.md`](skills/design/rfc/templates/full-rfc.md)。**未被 grill 不算定稿** |
 | **refactor** | 存量代码结构改造（深浅模块 / 删除测试 / 接缝） |
 
 ### 构建 Build
@@ -103,7 +120,7 @@
 | superpower | 根因定位、最快反馈环、一次一个变量 | `diagnose` | 强调"可证伪假设"措辞 |
 | superpower | subagent-driven review | `grill` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
 | **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 20 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
-| **gstack** | opinionated default stack | `rfc/SKILL.md` 默认栈表 | **当前为空占位**，未真正落地，详见 rfc skill 中的状态说明 |
+| **gstack** | opinionated default stack | `skills/design/rfc/SKILL.md` 默认栈表 | **当前为空占位**，未真正落地，详见 rfc skill 中的状态说明 |
 | gstack | 外部 codex 调用思路 | `grill` 的 `--external` 模式 | 仅伪流程示意，未做完整集成 |
 | **mattpocock** | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
 | **everything-claude-code** | 元递归：skill 能回写约定 | `capture`（项目向） / `sediment`（个人向） | **未实现完整 hooks/commands/rules 闭环**，仅写约定文件 |
@@ -129,7 +146,7 @@
 
 发布后 Claude Code 自动管理；后续 `/plugin update` 即可升级。
 
-### 方式 B：脚本批量拷贝（适合需要 codex 兼容）
+### 方式 B：脚本批量拷贝（**装到 claude 或 codex 都行**）
 
 ```bash
 git clone git@github.com:initxy/initxy-skills.git
@@ -138,27 +155,40 @@ cd initxy-skills
 # 需要 jq
 brew install jq  # macOS
 
-# 装到 Claude 用户目录
-./scripts/install.sh --bundle all --target claude-user
+# 全量装到 Claude 用户目录（默认）
+./scripts/install.sh
+
+# 装到 Codex 用户目录
+./scripts/install.sh --to codex
+
+# 只装 ship 阶段到当前项目的 .claude/skills
+./scripts/install.sh --bundle ship --project
+
+# 完整组合
+./scripts/install.sh --to codex --bundle learn --project
 ```
 
-支持的 bundle：见 `manifests/bundles.json`（按 6 阶段分组：control / triage / define / design / build / ship / learn / all）。
+参数说明：
 
-支持的 target：
-- `claude-user` → `~/.claude/skills/`（推荐）
-- `claude-project` → `./.claude/skills/`（仅当前项目）
-- `codex-user` → `~/.codex/skills/`
-- `codex-project` → `./.codex/skills/`
+| 参数 | 默认值 | 说明 |
+|---|---|---|
+| `--to claude\|codex` | `claude` | 目标 agent |
+| `--project` | 关闭 | 装到当前项目 `./.<agent>/skills/`，不带则装到用户目录 |
+| `--bundle <name>` | `all` | 见 `manifests/bundles.json`：control / triage / define / design / build / ship / learn / all |
+
+不论 `--to` 选哪个，目标目录里的 skill 都是**平铺**的（`~/.<agent>/skills/os/`、`~/.<agent>/skills/grill/` ...），源仓库的 `skills/<category>/` 分组只用于阅读。
 
 ### 方式 C：symlink（**自己用 + 边用边改 推荐**）
 
 ```bash
 git clone git@github.com:initxy/initxy-skills.git ~/dev/initxy-skills
 mkdir -p ~/.claude/skills
-ln -s ~/dev/initxy-skills ~/.claude/skills/initxy-skills
+ln -s ~/dev/initxy-skills/skills ~/.claude/skills/initxy-skills
 ```
 
 好处：`git pull` 一下，Claude 立刻看到最新版本；改 skill 即时生效。
+
+> 注：这种装法目标目录下会多一层 `initxy-skills/<category>/<skill>/` 路径。Claude/Codex 都支持递归扫描 `skills/` 找 `SKILL.md`，所以照样能加载。换成 codex 把 `~/.claude` 改成 `~/.codex` 即可。
 
 ## 快速开始
 
@@ -216,7 +246,7 @@ Bug 链路：`diagnose → verify → capture?`
 ## 自我使用建议
 
 1. **首次接入**：在第一个项目里跑 `setup-os` 创建 AGENTS.md。
-2. **填默认栈**：打开 `rfc/SKILL.md`，把「默认栈」表的 7 个 `<待填>` 替换成你跨项目都好使的栈。
+2. **填默认栈**：打开 `skills/design/rfc/SKILL.md`，把「默认栈」表的 7 个 `<待填>` 替换成你跨项目都好使的栈。
 3. **建数字自我仓库**：`~/notes/` 强烈建议作为私有 git repo 单独维护——这是你跨项目的长期资产。
 4. **边用边改**：用 symlink 安装方式，发现 skill 不顺手就直接改文件，下次立即生效。
 

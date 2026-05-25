@@ -1,58 +1,58 @@
 {
   "control": [
-    "os",
-    "setup-os",
-    "handoff"
+    "control/os",
+    "control/setup-os",
+    "control/handoff"
   ],
   "triage": [
-    "assess",
-    "grill"
+    "triage/assess",
+    "triage/grill"
   ],
   "define": [
-    "clarify",
-    "decide"
+    "define/clarify",
+    "define/decide"
   ],
   "design": [
-    "design",
-    "rfc",
-    "refactor"
+    "design/design",
+    "design/rfc",
+    "design/refactor"
   ],
   "build": [
-    "plan",
-    "tdd",
-    "diagnose"
+    "build/plan",
+    "build/tdd",
+    "build/diagnose"
   ],
   "ship": [
-    "verify",
-    "review",
-    "ship"
+    "ship/verify",
+    "ship/review",
+    "ship/ship"
   ],
   "learn": [
-    "scan",
-    "learn",
-    "capture",
-    "sediment"
+    "learn/scan",
+    "learn/learn",
+    "learn/capture",
+    "learn/sediment"
   ],
   "all": [
-    "os",
-    "setup-os",
-    "handoff",
-    "assess",
-    "grill",
-    "clarify",
-    "decide",
-    "design",
-    "rfc",
-    "refactor",
-    "plan",
-    "tdd",
-    "diagnose",
-    "verify",
-    "review",
-    "ship",
-    "scan",
-    "learn",
-    "capture",
-    "sediment"
+    "control/os",
+    "control/setup-os",
+    "control/handoff",
+    "triage/assess",
+    "triage/grill",
+    "define/clarify",
+    "define/decide",
+    "design/design",
+    "design/rfc",
+    "design/refactor",
+    "build/plan",
+    "build/tdd",
+    "build/diagnose",
+    "ship/verify",
+    "ship/review",
+    "ship/ship",
+    "learn/scan",
+    "learn/learn",
+    "learn/capture",
+    "learn/sediment"
   ]
 }

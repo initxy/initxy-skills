@@ -2,7 +2,29 @@
 set -euo pipefail
 
 bundle="all"
-target="codex-user"
+to="claude"
+scope="user"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  scripts/install.sh [--to claude|codex] [--project] [--bundle <name>]
+
+Flags:
+  --to        目标 agent：claude 或 codex                （默认 claude）
+  --project   装到当前项目（./.<agent>/skills/），不带则装到用户目录
+  --bundle    要装的 bundle，见 manifests/bundles.json   （默认 all）
+
+可用 bundle：control / triage / define / design / build / ship / learn / all
+
+Examples:
+  scripts/install.sh                          # 全量装到 ~/.claude/skills/
+  scripts/install.sh --to codex               # 全量装到 ~/.codex/skills/
+  scripts/install.sh --to claude --project    # 全量装到 ./.claude/skills/
+  scripts/install.sh --bundle ship            # 只装 ship 阶段到 ~/.claude/skills/
+  scripts/install.sh --to codex --bundle learn --project
+EOF
+}
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -10,68 +32,67 @@ while [[ $# -gt 0 ]]; do
       bundle="${2:-}"
       shift 2
       ;;
-    --target)
-      target="${2:-}"
+    --to)
+      to="${2:-}"
       shift 2
       ;;
+    --project)
+      scope="project"
+      shift
+      ;;
     -h|--help)
-      cat <<'EOF'
-Usage:
-  scripts/install.sh [--bundle control|triage|define|design|build|ship|learn|all] [--target codex-user|claude-user|codex-project|claude-project]
-
-Defaults:
-  --bundle all
-  --target codex-user
-
-Examples:
-  scripts/install.sh --bundle all --target claude-user
-  scripts/install.sh --bundle ship --target claude-project
-EOF
+      usage
       exit 0
       ;;
     *)
-    echo "未知参数: $1" >&2
+      echo "未知参数: $1" >&2
+      echo >&2
+      usage >&2
       exit 1
       ;;
   esac
 done
 
-root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-manifest="$root/manifests/bundles.json"
-
-case "$target" in
-  codex-user) dest="$HOME/.codex/skills" ;;
-  claude-user) dest="$HOME/.claude/skills" ;;
-  codex-project) dest="$PWD/.codex/skills" ;;
-  claude-project) dest="$PWD/.claude/skills" ;;
+case "$to" in
+  claude|codex) ;;
   *)
-    echo "未知 target: $target" >&2
+    echo "未知 --to: ${to}（仅支持 claude 或 codex）" >&2
     exit 1
     ;;
 esac
 
+case "$scope" in
+  user)    dest="$HOME/.$to/skills" ;;
+  project) dest="$PWD/.$to/skills" ;;
+esac
+
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+manifest="$root/manifests/bundles.json"
+
 if ! command -v jq >/dev/null 2>&1; then
-  echo "需要先安装 jq" >&2
+  echo "需要先安装 jq（macOS: brew install jq）" >&2
   exit 1
 fi
 
-skills="$(jq -r --arg b "$bundle" '.[$b][]?' "$manifest")"
-if [[ -z "$skills" ]]; then
+skills_raw="$(jq -r --arg b "$bundle" '.[$b][]?' "$manifest")"
+if [[ -z "$skills_raw" ]]; then
   echo "未知或空 bundle: $bundle" >&2
   exit 1
 fi
 
 mkdir -p "$dest"
 
-for skill in $skills; do
-  src="$root/$skill"
+while IFS= read -r path; do
+  [[ -z "$path" ]] && continue
+  src="$root/skills/$path"
+  name="$(basename "$path")"
   if [[ ! -d "$src" ]]; then
-    echo "缺少 skill: $skill" >&2
+    echo "缺少 skill: $path" >&2
     exit 1
   fi
-  rm -rf "$dest/$skill"
-  cp -R "$src" "$dest/$skill"
-  echo "已安装 $skill -> $dest/$skill"
-done
+  rm -rf "$dest/$name"
+  cp -R "$src" "$dest/$name"
+  echo "已安装 $name -> $dest/$name"
+done <<< "$skills_raw"
 
-echo "完成: bundle=$bundle target=$target dest=$dest"
+echo "完成: --to=$to scope=$scope bundle=$bundle dest=$dest"
