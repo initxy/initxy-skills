@@ -1,64 +1,52 @@
 {
-  "control": [
-    "control/os",
-    "control/setup-os",
-    "control/handoff",
-    "control/caveman"
+  "engineering": [
+    "engineering/diagnose",
+    "engineering/grill-with-docs",
+    "engineering/triage",
+    "engineering/improve-codebase-architecture",
+    "engineering/setup-matt-pocock-skills",
+    "engineering/tdd",
+    "engineering/to-issues",
+    "engineering/to-prd",
+    "engineering/to-sdd",
+    "engineering/zoom-out",
+    "engineering/prototype",
+    "engineering/review"
   ],
-  "triage": [
-    "triage/assess",
-    "triage/grill"
+  "productivity": [
+    "productivity/caveman",
+    "productivity/grill-me",
+    "productivity/handoff",
+    "productivity/write-a-skill"
   ],
-  "define": [
-    "define/clarify",
-    "define/decide"
-  ],
-  "design": [
-    "design/design",
-    "design/rfc",
-    "design/refactor",
-    "design/zoom-out",
-    "design/improve-codebase-architecture"
-  ],
-  "build": [
-    "build/plan",
-    "build/tdd",
-    "build/diagnose"
-  ],
-  "ship": [
-    "ship/verify",
-    "ship/review",
-    "ship/ship"
-  ],
-  "learn": [
-    "learn/scan",
-    "learn/learn",
-    "learn/capture",
-    "learn/sediment"
+  "writing": [
+    "writing/edit-article",
+    "writing/obsidian-vault",
+    "writing/writing-beats",
+    "writing/writing-fragments",
+    "writing/writing-shape"
   ],
   "all": [
-    "control/os",
-    "control/setup-os",
-    "control/handoff",
-    "control/caveman",
-    "triage/assess",
-    "triage/grill",
-    "define/clarify",
-    "define/decide",
-    "design/design",
-    "design/rfc",
-    "design/refactor",
-    "design/zoom-out",
-    "design/improve-codebase-architecture",
-    "build/plan",
-    "build/tdd",
-    "build/diagnose",
-    "ship/verify",
-    "ship/review",
-    "ship/ship",
-    "learn/scan",
-    "learn/learn",
-    "learn/capture",
-    "learn/sediment"
+    "engineering/diagnose",
+    "engineering/grill-with-docs",
+    "engineering/triage",
+    "engineering/improve-codebase-architecture",
+    "engineering/setup-matt-pocock-skills",
+    "engineering/tdd",
+    "engineering/to-issues",
+    "engineering/to-prd",
+    "engineering/to-sdd",
+    "engineering/zoom-out",
+    "engineering/prototype",
+    "engineering/review",
+    "productivity/caveman",
+    "productivity/grill-me",
+    "productivity/handoff",
+    "productivity/write-a-skill",
+    "writing/edit-article",
+    "writing/obsidian-vault",
+    "writing/writing-beats",
+    "writing/writing-fragments",
+    "writing/writing-shape"
   ]
 }

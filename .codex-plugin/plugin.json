@@ -1,24 +1,24 @@
 {
-  "name": "initxy-skills",
-  "version": "0.2.0",
-  "description": "个人 agent 操作系统 skill 包：YC/grill 立项、详细技术评审、TDD、发布、数字自我沉淀。",
+  "name": "mattpocock-skills-zh",
+  "version": "0.3.0",
+  "description": "mattpocock/skills 中文版：真实工程工作流、TDD、诊断、triage、架构改进、原型和交接。",
   "skills": "./skills",
   "interface": {
-    "displayName": "initxy Skills",
-    "shortDescription": "个人 agent 操作系统：立项 / 定义 / 设计 / 构建 / 发布 / 沉淀，6 阶段 20 skill。",
-    "longDescription": "initxy-skills 是个人版 agent 操作系统，覆盖：YC/grill 风格立项与红队挑战、需求澄清、轻型设计 (design) 与 RFC 级重型技术评审、TDD、诊断、verify 强制闸门、发布检查、外部信息扫描、心智模型学习、项目知识 capture 与个人数字自我 sediment（只存 LLM 答不出的独特知识）。",
-    "developerName": "initxy",
+    "displayName": "Matt Pocock Skills 中文版",
+    "shortDescription": "mattpocock/skills 的中文化复用版。",
+    "longDescription": "完全复用 mattpocock/skills 的 skill 结构与工作流，并把说明、触发描述和操作流程改为中文。覆盖工程诊断、TDD、issue 拆分、PRD、triage、架构改进、原型、极简沟通、交接和 skill 编写。",
+    "developerName": "mattpocock / initxy",
     "category": "Productivity",
     "capabilities": [
       "Read",
       "Write"
     ],
     "defaultPrompt": [
-      "请求不确定时，用 os 路由。",
-      "可测试行为在写生产代码前先用 tdd。",
-      "声称完成前必须用 verify。",
-      "立项弱或假设太多时用 grill 红队挑战，不反复 clarify。",
-      "项目知识沉淀走 capture；个人独特知识走 sediment，LLM 能答的不存。"
+      "首次用于工程仓库时先运行 setup-matt-pocock-skills。",
+      "修 bug 或性能回归用 diagnose。",
+      "功能实现或修复优先用 tdd 的红绿重构循环。",
+      "模糊方案先用 grill-with-docs 或 grill-me 追问。",
+      "大型计划用 to-prd、to-sdd 和 to-issues 从需求走到软件设计再拆垂直切片。"
     ]
   }
 }

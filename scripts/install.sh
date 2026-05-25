@@ -7,7 +7,7 @@ scope="user"
 
 usage() {
   cat <<'EOF'
-Usage:
+用法:
   scripts/install.sh [--to claude|codex] [--project] [--bundle <name>]
 
 Flags:
@@ -15,14 +15,14 @@ Flags:
   --project   装到当前项目（./.<agent>/skills/），不带则装到用户目录
   --bundle    要装的 bundle，见 manifests/bundles.json   （默认 all）
 
-可用 bundle：control / triage / define / design / build / ship / learn / all
+可用 bundle：engineering / productivity / writing / all
 
 Examples:
   scripts/install.sh                          # 全量装到 ~/.claude/skills/
   scripts/install.sh --to codex               # 全量装到 ~/.codex/skills/
   scripts/install.sh --to claude --project    # 全量装到 ./.claude/skills/
-  scripts/install.sh --bundle ship            # 只装 ship 阶段到 ~/.claude/skills/
-  scripts/install.sh --to codex --bundle learn --project
+  scripts/install.sh --bundle engineering     # 只装工程类 skill 到 ~/.claude/skills/
+  scripts/install.sh --to codex --bundle productivity --project
 EOF
 }
 

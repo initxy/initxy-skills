@@ -4,7 +4,7 @@
 # 用法（curl | bash 风格，参数走 `bash -s --`）：
 #   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
 #   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex
-#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --bundle ship --project
+#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --bundle engineering --project
 #
 # 环境变量（可选）：
 #   REPO=initxy/initxy-skills   覆盖仓库（用于 fork）
