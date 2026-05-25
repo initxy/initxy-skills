@@ -21,6 +21,7 @@
   ],
   "writing": [
     "writing/edit-article",
+    "writing/initxy-writer",
     "writing/obsidian-vault",
     "writing/writing-beats",
     "writing/writing-fragments",
@@ -44,6 +45,7 @@
     "productivity/handoff",
     "productivity/write-a-skill",
     "writing/edit-article",
+    "writing/initxy-writer",
     "writing/obsidian-vault",
     "writing/writing-beats",
     "writing/writing-fragments",

@@ -119,6 +119,7 @@ diagnose -> tdd -> handoff
 ### Writing
 
 - `edit-article`：编辑文章。
+- `initxy-writer`：按 initxy 的务实、第一性原理、逻辑推导风格写作和改写。
 - `obsidian-vault`：处理 Obsidian vault。
 - `writing-beats`：以 beat 旅程方式塑造文章。
 - `writing-fragments`：追问并收集写作 fragments。
