@@ -96,8 +96,8 @@ skills/
 ### 发布 Ship
 | Skill | 职责 |
 |---|---|
-| **verify** | **验证闸门**。不接受"应该"、"看起来"、子 agent 报告；要求新鲜命令输出；用户跳过时只能标 `未验证` |
-| **review** | diff/PR 审查。自审优先走 `grill --redteam` 的 skeptic subagent；按 P0-P3 分级 |
+| **verify** | **验证闸门**。不接受"应该"、"看起来"、转述报告；要求新鲜命令输出；用户跳过时只能标 `未验证` |
+| **review** | diff/PR 审查。重点找正确性风险、回归、缺失测试和安全问题；按 P0-P3 分级 |
 | **ship** | PR / release / deploy 包装；默认必经 verify + review；含 changelog + 回滚预案 |
 
 ### 沉淀 Learn
@@ -121,17 +121,15 @@ skills/
 
 ## 来源对照表
 
-只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · mattpocock 高（未复刻 setup / issue tracker 闭环）· GSD 中 · gstack 中低（技术栈来源规则已落地，gstack CLI/评审军团未复刻） · everything-claude-code 低（无完整 hooks/commands 闭环）。
+只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · mattpocock 高（未复刻 setup / issue tracker 闭环）· GSD 中 · gstack 中低（技术栈来源规则已落地） · everything-claude-code 低（无完整 hooks/commands 闭环）。
 
 | 来源 | 借鉴点 | 落到的 skill | 与原作的差异 |
 |---|---|---|---|
 | **superpower**（[obra/superpowers](https://github.com/obra)） | 新鲜验证证据 / 拒绝"应该""看起来" | `verify` | 中文重写、绑定 `ship` 闸门 |
 | superpower | 红绿先于代码 | `tdd` | 没硬卡"必须先写测试"，留用户跳过口 |
 | superpower | 根因定位、最快反馈环、一次一个变量 | `diagnose` | 强调"可证伪假设"措辞 |
-| superpower | subagent-driven review | `grill --redteam` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
 | **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 23 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
 | **gstack** | 技术栈要 opinionated，偏离须有证据 | `rfc` 的「技术栈来源」规则 | 不内置假默认栈；优先读项目现有栈 / ADR / 个人默认笔记 |
-| gstack | 外部 codex 调用思路 | `grill --external` 模式 | 仅提供调用路径和降级规则，未复刻 gstack CLI |
 | **mattpocock** | 逐问对齐、public interface、深模块 | `grill --align` / `tdd` / `refactor` | 没复刻完整 issue tracker / CONTEXT inline 更新闭环 |
 | mattpocock | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
 | mattpocock | 极简输出持续模式 | `caveman` | 中文化触发词；保留安全/不可逆操作的完整表达例外 |
@@ -140,7 +138,7 @@ skills/
 | **everything-claude-code** | 元递归：skill 能回写约定 | `capture`（项目向） / `sediment`（个人向） | **未实现完整 hooks/commands/rules 闭环**，仅写约定文件 |
 | everything-claude-code | description 字段即触发器 | `setup-os` 不复制 skill 路由表的设计 | 借了"description 优先"，没借自动注入机制 |
 
-仍是**理念借鉴**而非可执行复刻的部分：gstack 的 CLI / review specialists / browser-design 工具链、everything-claude-code 的 hooks 自动化、Matt 的完整项目配置和 inline 文档更新闭环。
+仍是**理念借鉴**而非可执行复刻的部分：gstack 的 CLI / browser-design 工具链、everything-claude-code 的 hooks 自动化、Matt 的完整项目配置和 inline 文档更新闭环。
 
 ## 安装
 

@@ -22,7 +22,7 @@ description: 为新 session 或 agent 写简洁交接文档，让接收方冷启
 - 上下文窗口即将耗尽，需要 fresh context 继续。
 - 暂停工作超过数小时，需要留下可恢复的状态快照。
 - 把任务移交给另一个 agent 或人类协作者。
-- 准备让子 agent 冷启动执行某阶段（superpower 式 subagent brief）。
+- 准备让新会话或协作者冷启动执行某阶段。
 
 ## 流程
 
