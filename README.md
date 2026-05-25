@@ -6,45 +6,35 @@
 
 ## 怎么安装
 
-依赖：`bash`、`jq`。远程安装还需要 `curl`、`tar`。
+依赖：`bash`、`jq`、`curl`、`tar`。
 
-远程安装：
+安装：
 
 ```bash
 # 默认：安装 all bundle 到 ~/.claude/skills/
 curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
 
 # 安装到 Codex: ~/.codex/skills/
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex bash
 ```
 
-本地安装：
+常用变量：
 
-```bash
-# 默认：安装 all bundle 到 ~/.claude/skills/
-./scripts/install.sh
-
-# 安装到 Codex: ~/.codex/skills/
-./scripts/install.sh --to codex
-```
-
-常用选项：
-
-- `--to claude|codex`：安装目标，默认 `claude`。
-- `--bundle engineering|productivity|writing|all`：安装范围，默认 `all`。
-- `--project`：安装到当前项目的 `./.<agent>/skills/`，不加则安装到用户目录。
+- `TO=claude|codex`：安装目标，默认 `claude`。
+- `BUNDLE=engineering|productivity|writing|all`：安装范围，默认 `all`。
+- `PROJECT=1`：安装到当前项目的 `./.<agent>/skills/`，不加则安装到用户目录。
 
 示例：
 
 ```bash
 # 只安装工程类 skill 到 Claude
-./scripts/install.sh --bundle engineering
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | BUNDLE=engineering bash
 
 # 安装 productivity bundle 到 Codex
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex --bundle productivity
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex BUNDLE=productivity bash
 
 # 安装到当前项目
-./scripts/install.sh --to codex --project
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex PROJECT=1 bash
 ```
 
 ## 怎么使用

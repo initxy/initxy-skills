@@ -1,14 +1,21 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-bundle="all"
-to="claude"
-scope="user"
+bundle="${BUNDLE:-all}"
+to="${TO:-claude}"
+scope="${SCOPE:-user}"
+
+if [[ "${PROJECT:-}" == "1" || "${PROJECT:-}" == "true" ]]; then
+  scope="project"
+fi
 
 usage() {
   cat <<'EOF'
 用法:
   scripts/install.sh [--to claude|codex] [--project] [--bundle <name>]
+
+环境变量:
+  TO=codex BUNDLE=engineering PROJECT=1 scripts/install.sh
 
 Flags:
   --to        目标 agent：claude 或 codex                （默认 claude）
@@ -62,7 +69,7 @@ case "$to" in
 esac
 
 case "$scope" in
-  user)    dest="$HOME/.$to/skills" ;;
+  user) dest="$HOME/.$to/skills" ;;
   project) dest="$PWD/.$to/skills" ;;
 esac
 

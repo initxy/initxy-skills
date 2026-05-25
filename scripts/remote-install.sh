@@ -1,14 +1,17 @@
 #!/usr/bin/env bash
 # 远程一行装：不用 git clone，直接从 GitHub 拉 tarball、解压、跑 install.sh
 #
-# 用法（curl | bash 风格，参数走 `bash -s --`）：
+# 用法：
 #   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
-#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex
-#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --bundle engineering --project
+#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex bash
+#   curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | BUNDLE=engineering PROJECT=1 bash
 #
 # 环境变量（可选）：
 #   REPO=initxy/initxy-skills   覆盖仓库（用于 fork）
 #   REF=main                    分支/tag/commit，可锁版本
+#   TO=claude|codex             安装目标，默认 claude
+#   BUNDLE=engineering|productivity|writing|all  安装范围，默认 all
+#   PROJECT=1                   安装到当前项目的 ./.<agent>/skills/
 #   KEEP_TMP=1                  不清理临时目录（调试用）
 
 set -euo pipefail
@@ -37,7 +40,6 @@ if ! curl -fsSL "$tarball" | tar -xz -C "$tmp"; then
   exit 1
 fi
 
-# tar 解压后顶层目录形如 initxy-skills-main/、initxy-skills-<sha>/
 root="$(find "$tmp" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
 if [[ -z "$root" || ! -f "$root/scripts/install.sh" ]]; then
   echo "解压后找不到 scripts/install.sh，仓库结构异常" >&2
