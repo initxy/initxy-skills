@@ -48,6 +48,15 @@ skills/
 
 安装时**不会**在目标目录保留这层 `category/` 前缀——Claude/Codex 都会拿到平铺的 `~/.<agent>/skills/<skill>/`。分组只用于源仓库阅读。
 
+每个 skill 目录可包含：
+
+| 路径 | 用途 |
+|---|---|
+| `SKILL.md` | 触发后加载的核心流程，尽量短 |
+| `references/` | 按需读取的例子、清单、prompt、格式说明 |
+| `scripts/` | 可执行的小工具，用于确定性操作 |
+| `templates/` | 写入项目的模板文件 |
+
 ## 20 个 skill 清单
 
 ### 控制面
@@ -61,7 +70,7 @@ skills/
 | Skill | 职责 |
 |---|---|
 | **assess** | 判断值不值得做。模式：`yc`（产品方向）/ `roi`（工程内决策） |
-| **grill** | **对抗式追问 / 红队攻击**。spawn skeptic subagent 或调外部 codex；只攻不守 |
+| **grill** | 两种模式：`--align` 做 Matt 式逐问对齐；`--redteam` 做 superpowers 式红队攻击 |
 
 ### 定义 Define
 | Skill | 职责 |
@@ -73,7 +82,7 @@ skills/
 | Skill | 职责 |
 |---|---|
 | **design** | 轻型方案草图（1-3 模块、几天能完成、私下探索） |
-| **rfc** | **重型技术评审**：模块 / 技术栈 / 数据模型 / 数据流 / API 契约 / NFR / 失败模式 / 可观测性 / 安全 / 成本。完整模板见 [`skills/design/rfc/templates/full-rfc.md`](skills/design/rfc/templates/full-rfc.md)。**未被 grill 不算定稿** |
+| **rfc** | **重型技术评审**：模块 / 技术栈 / 数据模型 / 数据流 / API 契约 / NFR / 失败模式 / 可观测性 / 安全 / 成本。完整模板见 [`skills/design/rfc/templates/full-rfc.md`](skills/design/rfc/templates/full-rfc.md)。高影响 RFC **未被 `grill --redteam` 不算 accepted** |
 | **refactor** | 存量代码结构改造（深浅模块 / 删除测试 / 接缝） |
 
 ### 构建 Build
@@ -86,9 +95,9 @@ skills/
 ### 发布 Ship
 | Skill | 职责 |
 |---|---|
-| **verify** | **强制验证闸门**。不接受"应该"、"看起来"、子 agent 报告；要求新鲜命令输出 |
-| **review** | diff/PR 审查。自审强制走 grill 的 skeptic subagent；按 P0-P3 分级 |
-| **ship** | PR / release / deploy 包装；强制走 verify + review；含 changelog + 回滚预案 |
+| **verify** | **验证闸门**。不接受"应该"、"看起来"、子 agent 报告；要求新鲜命令输出；用户跳过时只能标 `未验证` |
+| **review** | diff/PR 审查。自审优先走 `grill --redteam` 的 skeptic subagent；按 P0-P3 分级 |
+| **ship** | PR / release / deploy 包装；默认必经 verify + review；含 changelog + 回滚预案 |
 
 ### 沉淀 Learn
 | Skill | 职责 |
@@ -104,29 +113,30 @@ skills/
 |---|---|---|
 | 1 | 对抗优于协助 | superpower |
 | 2 | 能不写就不写（每个 skill 有「何时不用我」逃生口） | GSD |
-| 3 | 意见优于框架（默认栈、默认推荐） | gstack |
+| 3 | 意见优于框架（项目现有栈优先，偏离须有证据） | gstack |
 | 4 | 教会胜过给答案 | mattpocock |
 | 5 | 验证是闸门（拒绝"应该""看起来"） | superpower |
 | 6 | 元递归（sediment / capture 能回写约定） | everything-claude-code |
 
 ## 来源对照表
 
-只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · GSD 中 · mattpocock 中 · gstack 低（默认栈未填写） · everything-claude-code 低（无完整 hooks/commands 闭环）。
+只列**实际落地**的借鉴点，不列"理念上类似"。当前借鉴扎实度：superpower 高 · GSD 中 · mattpocock 中 · gstack 中低（技术栈来源规则已落地，gstack CLI/评审军团未复刻） · everything-claude-code 低（无完整 hooks/commands 闭环）。
 
 | 来源 | 借鉴点 | 落到的 skill | 与原作的差异 |
 |---|---|---|---|
 | **superpower**（[obra/superpowers](https://github.com/obra)） | 新鲜验证证据 / 拒绝"应该""看起来" | `verify` | 中文重写、绑定 `ship` 闸门 |
 | superpower | 红绿先于代码 | `tdd` | 没硬卡"必须先写测试"，留用户跳过口 |
 | superpower | 根因定位、最快反馈环、一次一个变量 | `diagnose` | 强调"可证伪假设"措辞 |
-| superpower | subagent-driven review | `grill` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
+| superpower | subagent-driven review | `grill --redteam` / `review` | 已加 codex / 主 agent 自审 fallback 应对无 subagent 平台 |
 | **GSD**（get-shit-done） | 「能直接做就别流程化」每个 skill 留逃生口 | 全部 20 个 skill 的「何时不用我」 | 把"逃生口"显式作为模板字段 |
-| **gstack** | opinionated default stack | `skills/design/rfc/SKILL.md` 默认栈表 | **当前为空占位**，未真正落地，详见 rfc skill 中的状态说明 |
-| gstack | 外部 codex 调用思路 | `grill` 的 `--external` 模式 | 仅伪流程示意，未做完整集成 |
-| **mattpocock** | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
+| **gstack** | 技术栈要 opinionated，偏离须有证据 | `rfc` 的「技术栈来源」规则 | 不内置假默认栈；优先读项目现有栈 / ADR / 个人默认笔记 |
+| gstack | 外部 codex 调用思路 | `grill --external` 模式 | 仅提供调用路径和降级规则，未复刻 gstack CLI |
+| **mattpocock** | 逐问对齐、public interface、深模块 | `grill --align` / `tdd` / `refactor` | 没复刻完整 issue tracker / CONTEXT inline 更新闭环 |
+| mattpocock | 心智模型 + 检验题 + 练习 | `learn` | 检验题用"自答 + 一刀切"格式，未直接复用 mattpocock 课程结构 |
 | **everything-claude-code** | 元递归：skill 能回写约定 | `capture`（项目向） / `sediment`（个人向） | **未实现完整 hooks/commands/rules 闭环**，仅写约定文件 |
 | everything-claude-code | description 字段即触发器 | `setup-os` 不复制 skill 路由表的设计 | 借了"description 优先"，没借自动注入机制 |
 
-仍是**理念借鉴**而非可执行复刻的部分：mattpocock 的具体课程对照、gstack 的实际栈、everything-claude-code 的 hooks 自动化。这些位置已在对应 skill 文件中标注 `<待填>` 或"未实现"。
+仍是**理念借鉴**而非可执行复刻的部分：gstack 的 CLI / review specialists / browser-design 工具链、everything-claude-code 的 hooks 自动化、Matt 的完整项目配置和 inline 文档更新闭环。
 
 ## 安装
 
@@ -208,7 +218,8 @@ ln -s ~/dev/initxy-skills/skills ~/.claude/skills/initxy-skills
 装好后，下次跟 Claude Code 说：
 
 - 「这个想法值不值得做？」→ 触发 `assess`
-- 「帮我质疑一下这个方案」→ 触发 `grill`
+- 「帮我追问一下这个想法」→ 触发 `grill --align`
+- 「帮我质疑一下这个方案」→ 触发 `grill --redteam`
 - 「写个 RFC」→ 触发 `rfc`
 - 「我有个跨项目的判断」→ 触发 `sediment`
 - 「不知道用哪个 skill」→ 触发 `os` 路由
@@ -230,7 +241,7 @@ cd ~/your-project
    ↓
 [assess --yc] ──── 不值得 ──→ STOP
    ↓
-[grill] ──── 假设被攻破 ──→ 改方案 / 弃方案
+[grill --redteam] ──── 假设被攻破 ──→ 改方案 / 弃方案
    ↓
 [clarify] ──→ 明确目标 / 范围 / 验收
    ↓
@@ -238,7 +249,7 @@ cd ~/your-project
    ↓
 [design] 或 [rfc] ── 看复杂度
    ↓
-[grill] ──── 设计被攻击
+[grill --redteam] ──── 设计被攻击
    ↓
 [plan] ──→ 垂直切片步骤
    ↓
@@ -259,7 +270,7 @@ Bug 链路：`diagnose → verify → capture?`
 ## 自我使用建议
 
 1. **首次接入**：在第一个项目里跑 `setup-os` 创建 AGENTS.md。
-2. **填默认栈**：打开 `skills/design/rfc/SKILL.md`，把「默认栈」表的 7 个 `<待填>` 替换成你跨项目都好使的栈。
+2. **建个人默认栈**：可选写 `~/notes/principles/default-stack.md`；`rfc` 会优先读项目现有栈和 ADR，没有才参考个人默认。
 3. **建数字自我仓库**：`~/notes/` 强烈建议作为私有 git repo 单独维护——这是你跨项目的长期资产。
 4. **边用边改**：用 symlink 安装方式，发现 skill 不顺手就直接改文件，下次立即生效。
 

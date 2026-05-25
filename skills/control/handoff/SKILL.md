@@ -29,13 +29,13 @@ description: 为新 session 或 agent 写简洁交接文档，让接收方冷启
 1. **扫描必要文件**：只读当前任务直接相关的变更文件、未关闭 issue、最近 commit——不读整个 repo。
 2. **收集引用**：记录 plan 路径、ADR 路径、PR/issue URL、关键 commit hash——不复制原文。
 3. **删敏感信息**：检查收集到的内容，token、密钥、内部域名替换为 `<REDACTED>`。
-4. **生成文档**：按下方模板写到 `~/notes/handoffs/leo-handoff-<slug>-<timestamp>.md`（timestamp 格式：`YYYYMMDD-HHMM`，避免多 session 撞名）。
+4. **生成文档**：按下方模板写到 `~/notes/handoffs/handoff-<slug>-<timestamp>.md`（timestamp 格式：`YYYYMMDD-HHMM`，避免多 session 撞名）。
 5. **验证可读性**：假设接收方对话历史为空，重读一遍——能否冷启动？若不能，补充缺失上下文。
 6. **回报路径**：输出绝对路径，告知用户文件已就绪。
 
 ## 输出
 
-输出位置：`~/notes/handoffs/leo-handoff-<slug>-<timestamp>.md`
+输出位置：`~/notes/handoffs/handoff-<slug>-<timestamp>.md`
 
 ```markdown
 # Handoff: <主题 slug>

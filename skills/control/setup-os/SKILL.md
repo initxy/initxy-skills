@@ -23,10 +23,12 @@ disable-model-invocation: true
 
 ## Implementation
 
+可直接运行 `scripts/setup_os.sh <repo-root>` 执行下面流程；手动执行时按步骤做。
+
 1. **选定目标文件**
    - 若 `AGENTS.md` 存在 → 用它。
    - 否则若 `CLAUDE.md` 存在 → 用它。
-   - 否则 → `cp setup-os/templates/AGENTS.md ./AGENTS.md`，提示用户填写占位符。
+   - 否则 → `cp templates/AGENTS.md ./AGENTS.md`，提示用户填写占位符。
 
 2. **注入引用段**
    - 在目标文件中搜索 `## Agent skills` 标题。

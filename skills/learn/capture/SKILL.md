@@ -69,6 +69,8 @@ capture 可以回写：
 
 ## 输出（ADR 模板，Michael Nygard 风格）
 
+完整 ADR 格式和门槛见 [`references/adr-format.md`](references/adr-format.md)。
+
 ```markdown
 # ADR-<编号>: <标题>
 
@@ -98,10 +100,11 @@ capture 可以回写：
 
 1. 先问："以后在本项目哪个场景会复用？"——答不上来则不写。
 2. 拒绝泛化教程知识，判断：是项目特有还是通用？通用不写。
-3. 查是否已有同主题文件：`rg -l "<topic>" docs/ 2>/dev/null || true`（docs/ 不存在或无匹配都安全；无 `rg` 时退到 `grep -rl "<topic>" docs/ 2>/dev/null || true`）。
+3. 查是否已有同主题文件：优先运行 `scripts/find-existing-topic.sh "<topic>" docs`；无脚本时用 `rg -l "<topic>" docs/ 2>/dev/null || true`。
 4. 按目标位置表选唯一路径，创建或更新。
 5. 写短产物：reference 优于 recopy，结论优于过程叙事。
-6. 回报绝对路径。
+6. 若写入 `CLAUDE.md` / `AGENTS.md`，只加入可执行约定，不复制 skill 路由表。
+7. 回报绝对路径，并说明是 create 还是 update。
 
 ## 停止条件
 
