@@ -130,23 +130,25 @@ skills/
 
 ## 安装
 
-三种方式，按你的使用场景选。**当前推荐方式 B 或 C**；方式 A 的 marketplace 元数据尚未发布。
+四种方式，按你的使用场景选。**首次试用推荐方式 A**；边用边改推荐方式 C。
 
-### 方式 A：Claude Code Plugin（计划中，尚未发布）
-
-> ⚠️ 本仓库尚未发布为 Claude Code marketplace（`.claude-plugin/marketplace.json` 等元数据未建立）。下面的命令是**目标形态**，照抄当前会失败。等发布后会移除本警告。
+### 方式 A：远程一行装（不用 clone，**首次试用推荐**）
 
 ```bash
-# 把本仓库注册为 marketplace
-/plugin marketplace add initxy/initxy-skills
+# 全量装到 ~/.claude/skills/（默认）
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
 
-# 安装
-/plugin install initxy-skills@initxy-skills
+# 带参数：参数走 `bash -s --` 透传给 install.sh
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --to codex
+curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash -s -- --bundle ship --project
+
+# 锁版本（任意 branch / tag / commit sha）
+REF=v0.2.0 curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
 ```
 
-发布后 Claude Code 自动管理；后续 `/plugin update` 即可升级。
+依赖：`curl` / `tar` / `jq`（macOS：`brew install jq`）。原理：拉 GitHub tarball → 解压到 `mktemp` 临时目录 → 调用包里的 `scripts/install.sh` → 退出时清理。所有 `install.sh` 的参数（`--to` / `--project` / `--bundle`）都能透传。
 
-### 方式 B：脚本批量拷贝（**装到 claude 或 codex 都行**）
+### 方式 B：clone + 脚本批量拷贝（**装到 claude 或 codex 都行**）
 
 ```bash
 git clone git@github.com:initxy/initxy-skills.git
@@ -189,6 +191,17 @@ ln -s ~/dev/initxy-skills/skills ~/.claude/skills/initxy-skills
 好处：`git pull` 一下，Claude 立刻看到最新版本；改 skill 即时生效。
 
 > 注：这种装法目标目录下会多一层 `initxy-skills/<category>/<skill>/` 路径。Claude/Codex 都支持递归扫描 `skills/` 找 `SKILL.md`，所以照样能加载。换成 codex 把 `~/.claude` 改成 `~/.codex` 即可。
+
+### 方式 D：Claude Code Plugin marketplace（计划中，尚未发布）
+
+> ⚠️ 本仓库尚未发布为 Claude Code marketplace（`.claude-plugin/marketplace.json` 等元数据未建立）。下面的命令是**目标形态**，照抄当前会失败。等发布后会移除本警告。
+
+```bash
+/plugin marketplace add initxy/initxy-skills
+/plugin install initxy-skills@initxy-skills
+```
+
+发布后 Claude Code 自动管理；后续 `/plugin update` 即可升级。仅对 Claude Code 生效，Codex 用户继续用方式 A/B。
 
 ## 快速开始
 
