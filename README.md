@@ -2,7 +2,7 @@
 
 这是 initxy 自己的 agent skill 集合。
 
-它融合了 [Matt Pocock skills](https://github.com/mattpocock/skills) 等优秀 skill 的工程实践，新增了一些 initxy 自用 skill，并重新组织了说明、安装方式和阶段化调用路径。
+它融合了 [Matt Pocock skills](https://github.com/mattpocock/skills) 和 [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) 等优秀实践，新增了一些 initxy 自用 skill，并重新组织了说明、安装方式和阶段化调用路径。
 
 ## 怎么安装
 
@@ -125,3 +125,4 @@ diagnose -> tdd -> handoff
 ## 参考仓库
 
 - [mattpocock/skills](https://github.com/mattpocock/skills)
+- [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)

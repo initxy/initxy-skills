@@ -11,6 +11,7 @@ disable-model-invocation: true
 - Issue tracker：工作项在哪里，默认 GitHub，也支持 GitLab 和本地 markdown。
 - Triage labels：五个标准 triage 角色对应的真实标签。
 - Domain docs：`CONTEXT.md` 和 ADR 的位置及读取规则。
+- Agent behavior：压缩版工作准则，减少错误假设、过度设计、无关改动，并要求可验证结果。
 
 这是 prompt 驱动的 skill，不是确定性脚本。先探索，展示发现，逐项确认，再写文件。
 
@@ -21,7 +22,7 @@ disable-model-invocation: true
 读取现状，不要假设：
 
 - `git remote -v` 和 `.git/config`：是否 GitHub / GitLab 仓库。
-- 根目录 `AGENTS.md` / `CLAUDE.md`：是否已有 `## Agent skills`。
+- 根目录 `AGENTS.md` / `CLAUDE.md`：是否已有 `## Agent behavior` 和 `## Agent skills`。
 - 根目录 `CONTEXT.md` / `CONTEXT-MAP.md`。
 - `docs/adr/` 与 `src/*/docs/adr/`。
 - `docs/agents/`：是否已有本 skill 输出。
@@ -70,6 +71,7 @@ disable-model-invocation: true
 展示：
 
 - 将写入 `CLAUDE.md` / `AGENTS.md` 的 `## Agent skills` 区块。
+- 将写入 `CLAUDE.md` / `AGENTS.md` 的 `## Agent behavior` 区块。
 - `docs/agents/issue-tracker.md`
 - `docs/agents/triage-labels.md`
 - `docs/agents/domain.md`
@@ -84,11 +86,18 @@ disable-model-invocation: true
 - 否则有 `AGENTS.md` 就改它。
 - 两者都没有时，问用户创建哪个。
 
-已有 `## Agent skills` 就原地更新，不追加重复块，不覆盖周边用户内容。
+已有 `## Agent behavior` 或 `## Agent skills` 就原地更新，不追加重复块，不覆盖周边用户内容。
 
 区块：
 
 ```markdown
+## Agent behavior
+
+- State assumptions explicitly; ask when uncertain.
+- Prefer the simplest solution that satisfies the request; do not add speculative abstractions.
+- Touch only task-related code; do not perform drive-by refactors.
+- For non-trivial changes, define and run a concrete verification step.
+
 ## Agent skills
 
 ### Issue tracker
