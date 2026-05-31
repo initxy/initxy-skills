@@ -56,12 +56,14 @@ curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/r
 | --- | --- | --- |
 | 项目初始化 | 建 issue tracker、triage 标签、领域文档约定 | `setup-matt-pocock-skills` |
 | 理解现状 | 看清局部代码和整体系统关系 | `zoom-out` |
-| 澄清问题 | 追问需求、方案、边界和风险 | `grill-me` / `grill-with-docs` |
+| 产品成型 | 把模糊想法收敛成 PRD 前置 Product Brief | `product-shaping` |
+| 压力测试 | 追问需求、方案、边界和风险 | `grill-me` / `grill-with-docs` |
 | 需求定义 | 把上下文整理成 PRD | `to-prd` |
 | 技术设计 | 在 PRD 后产出 SDD | `to-sdd` |
 | 拆分任务 | 把方案拆成可独立领取的垂直切片 issue | `to-issues` |
 | 原型验证 | 快速验证 UI、交互或技术可行性 | `prototype` |
 | 实现功能 | 用红绿重构推进代码 | `tdd` |
+| 交付发布 | 检查、验证、commit、push，必要时 publish | `ship` |
 | 排查问题 | 结构化诊断 bug、失败测试、性能回归 | `diagnose` |
 | 整理 issue | 按状态机分类、推进、关闭 issue | `triage` |
 | 架构改进 | 识别浅模块，合并成更清晰的深模块 | `improve-codebase-architecture` |
@@ -74,7 +76,7 @@ curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/r
 新需求从 0 到交付：
 
 ```text
-grill-me -> to-prd -> to-sdd -> to-issues -> tdd -> handoff
+product-shaping -> grill-me -> to-prd -> to-sdd -> to-issues -> tdd -> ship
 ```
 
 已有代码需要理解或改造：
@@ -97,7 +99,9 @@ diagnose -> tdd -> handoff
 - `grill-with-docs`：结合 `CONTEXT.md` 与 ADR 追问方案，并即时沉淀术语和决策。
 - `triage`：按状态机整理 issue。
 - `improve-codebase-architecture`：寻找浅模块合并为深模块的架构机会。
+- `product-shaping`：把模糊产品想法收敛成 PRD 前置 Product Brief。
 - `setup-matt-pocock-skills`：为仓库初始化 issue tracker、triage 标签、领域文档约定。
+- `ship`：检查、验证、commit、push，并在有明确流程时 publish。
 - `tdd`：红绿重构循环。
 - `to-issues`：把计划拆成可独立领取的垂直切片 issue。
 - `to-prd`：把当前上下文整理成 PRD 并发布到 issue tracker。
