@@ -1,132 +1,50 @@
 # initxy-skills
 
-这是 initxy 自己的 agent skill 集合。
+initxy 的 agent skills 集合。
 
-它融合了 [Matt Pocock skills](https://github.com/mattpocock/skills) 和 [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills) 等优秀实践，新增了一些 initxy 自用 skill，并重新组织了说明、安装方式和阶段化调用路径。
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![skills.sh](https://skills.sh/b/initxy/initxy-skills)](https://skills.sh/initxy/initxy-skills)
 
-## 怎么安装
+## 为什么是这个集合
 
-依赖：`bash`、`jq`、`curl`、`tar`。
+随着模型能力变强，不少知名 skill 集合在编排上越来越重：[superpowers](https://github.com/obra/superpowers)、[Matt Pocock skills](https://github.com/mattpocock/skills) 等会拆出大量阶段化流程、子文件和细粒度触发条件。这类显式编排在能力较弱的模型上有用，但对现在的模型，过多的流程约束反而挤占注意力、增加漂移和上下文负担。
 
-安装：
+这套 skills 反过来做：只保留少量、边界清楚的 skill，把工作压成一条主线 `shape → implement → review`，再加 `setup`、`improve-architecture`、`handoff` 三个旁支。每个 skill 单文件，把目标、流程、产物和完成标准说清，不再多层拆分，让模型自己判断怎么用。
 
-```bash
-# 默认：安装 all bundle 到 ~/.claude/skills/
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | bash
+## 安装
 
-# 安装到 Codex: ~/.codex/skills/
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex bash
-```
-
-常用变量：
-
-- `TO=claude|codex`：安装目标，默认 `claude`。
-- `BUNDLE=engineering|productivity|writing|all`：安装范围，默认 `all`。
-- `PROJECT=1`：安装到当前项目的 `./.<agent>/skills/`，不加则安装到用户目录。
-
-示例：
+需要 Node.js。直接用 npx，无需全局安装：
 
 ```bash
-# 只安装工程类 skill 到 Claude
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | BUNDLE=engineering bash
-
-# 安装 productivity bundle 到 Codex
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex BUNDLE=productivity bash
-
-# 安装到当前项目
-curl -fsSL https://raw.githubusercontent.com/initxy/initxy-skills/main/scripts/remote-install.sh | TO=codex PROJECT=1 bash
+npx skills add initxy/initxy-skills
 ```
 
-## 怎么使用
+## Skills
 
-安装后，在 Codex / Claude 对话里直接点名 skill 即可：
+- `setup`：初始化仓库的 agent 工作约定（`AGENTS.md`、CONTEXT / ADR 规范）。
+- `shape`：把模糊想法收束成完整实现说明。
+- `implement`：按明确需求或 `shape` 实现说明完成实现。
+- `review`：审查实现是否符合需求和代码库标准。
+- `improve-architecture`：发现 deepening 机会并提出架构改进方案。
+- `handoff`：把当前对话和工作进度压缩成交接说明。
 
-```text
-用 to-prd 帮我把这个需求整理成 PRD
-用 to-sdd 基于 PRD 做技术设计
-用 diagnose 排查这个测试失败
-用 handoff 生成交接说明
+## 工作流
+
+```
+setup（一次性初始化）
+
+shape ──► implement ──► review ──►（不达标则回到 shape）
+
+improve-architecture（架构改进方向，按需）
+handoff（跨 session 交接，任意阶段）
 ```
 
-如果不确定该用哪个，就按下面的阶段选。
+`setup` 生成的 `AGENTS.md` 里已写明这条路径，跑完 `setup` 即知道怎么串。
 
-## 各阶段用什么
+## 结构
 
-| 阶段 | 目标 | 推荐 skill |
-| --- | --- | --- |
-| 项目初始化 | 建 issue tracker、triage 标签、领域文档约定 | `setup-matt-pocock-skills` |
-| 理解现状 | 看清局部代码和整体系统关系 | `zoom-out` |
-| 产品成型 | 把模糊想法收敛成 PRD 前置 Product Brief | `product-shaping` |
-| 压力测试 | 追问需求、方案、边界和风险 | `grill-me` / `grill-with-docs` |
-| 需求定义 | 把上下文整理成 PRD | `to-prd` |
-| 技术设计 | 在 PRD 后产出 SDD | `to-sdd` |
-| 拆分任务 | 把方案拆成可独立领取的垂直切片 issue | `to-issues` |
-| 原型验证 | 快速验证 UI、交互或技术可行性 | `prototype` |
-| 实现功能 | 用红绿重构推进代码 | `tdd` |
-| 交付发布 | 检查、验证、commit、push，必要时 publish | `ship` |
-| 排查问题 | 结构化诊断 bug、失败测试、性能回归 | `diagnose` |
-| 整理 issue | 按状态机分类、推进、关闭 issue | `triage` |
-| 架构改进 | 识别浅模块，合并成更清晰的深模块 | `improve-codebase-architecture` |
-| 沟通压缩 | 把表达压到最短但保留技术准确性 | `caveman` |
-| 工作交接 | 让另一个 agent 或人类继续接手 | `handoff` |
-| 创建 skill | 写一个结构正确的新 skill | `write-a-skill` |
+每个 skill 位于 `skills/<name>/SKILL.md`，符合 skills.sh / Agent Skills 格式。
 
-## 推荐主线
+## License
 
-新需求从 0 到交付：
-
-```text
-product-shaping -> grill-me -> to-prd -> to-sdd -> to-issues -> tdd -> ship
-```
-
-已有代码需要理解或改造：
-
-```text
-zoom-out -> grill-with-docs -> improve-codebase-architecture -> to-issues -> tdd
-```
-
-线上问题或测试失败：
-
-```text
-diagnose -> tdd -> handoff
-```
-
-## Skill 分类
-
-### Engineering
-
-- `diagnose`：结构化排查 bug / 性能回归。
-- `grill-with-docs`：结合 `CONTEXT.md` 与 ADR 追问方案，并即时沉淀术语和决策。
-- `triage`：按状态机整理 issue。
-- `improve-codebase-architecture`：寻找浅模块合并为深模块的架构机会。
-- `product-shaping`：把模糊产品想法收敛成 PRD 前置 Product Brief。
-- `setup-matt-pocock-skills`：为仓库初始化 issue tracker、triage 标签、领域文档约定。
-- `ship`：检查、验证、commit、push，并在有明确流程时 publish。
-- `tdd`：红绿重构循环。
-- `to-issues`：把计划拆成可独立领取的垂直切片 issue。
-- `to-prd`：把当前上下文整理成 PRD 并发布到 issue tracker。
-- `to-sdd`：在 PRD 后、拆 issue 前生成软件设计文档。
-- `zoom-out`：从局部代码上升一层看模块地图。
-- `prototype`：构建一次性原型验证逻辑或 UI。
-- `review`：从固定点 review diff，检查仓库标准和原始 spec。
-
-### Productivity
-
-- `caveman`：极简沟通模式。
-- `grill-me`：对计划或设计做逐问追问。
-- `handoff`：生成交接文档。
-- `write-a-skill`：创建新 skill。
-
-### Writing
-
-- `edit-article`：编辑文章。
-- `initxy-writer`：按 initxy 的务实、第一性原理、逻辑推导风格写作和改写。
-- `obsidian-vault`：处理 Obsidian vault。
-- `writing-beats`：以 beat 旅程方式塑造文章。
-- `writing-fragments`：追问并收集写作 fragments。
-- `writing-shape`：把原始材料塑造成可发布文章。
-
-## 参考仓库
-
-- [mattpocock/skills](https://github.com/mattpocock/skills)
-- [multica-ai/andrej-karpathy-skills](https://github.com/multica-ai/andrej-karpathy-skills)
+[MIT](LICENSE)
