@@ -44,19 +44,13 @@ description: 初始化仓库的 agent 工作约定。
 - 其余解释性文字用干净中文，不逐词直译英文句式。
 - 一个术语认准一种写法用到底；需要中文译名时也只固定一个，不混用。
 
-## 使用方式
-
-- 想法不清楚时先用 `shape`，把目标、范围、关键决策和验收标准说清。
-- 目标清楚后用 `implement` 完成全部实现；任务大且边界清楚时可以拆给 subagent，主 agent 负责整合和验证。
-- 完成后用 `review` 对照实现说明、代码变更和验证结果检查。
-- 架构改进、重构方向、模块设计用 `improve-architecture`；需要续接时用 `handoff`。
-
 ## Context / ADR
 
 - 涉及领域概念、系统边界或稳定约定时，先读 `CONTEXT.md`。
 - 涉及长期架构取舍时，先读 `docs/adr/`。
 - 新稳定术语进 `CONTEXT.md`；长期决策进 ADR；一次性细节不要沉淀。
 - 复杂或跨 session 的 `shape` 实现说明写入 `docs/implementation-specs/`。
+- 代码注释如需引用文档，只引用 `CONTEXT.md` 和 ADR（长期存在）；不要引用 `docs/implementation-specs/` 下的实现说明——它是一次性产物，合入后会归档，注释引用会失效。
 
 ## 工程约束
 

@@ -1,5 +1,5 @@
 ---
-name: translate
+name: translate-zh
 description: Translates English documents into natural Simplified Chinese while preserving meaning, document structure, terminology consistency, and author intent. Use when the user asks to translate English text, Markdown, documents, articles, specs, manuals, emails, reports, or files into Chinese, especially when they want idiomatic Chinese instead of literal translation.
 ---
 
