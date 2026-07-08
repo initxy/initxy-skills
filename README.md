@@ -1,109 +1,95 @@
 # initxy-skills
 
-**一套中文原生、少而精的 agent skills。** 把「先想清楚 → 再动手 → 做完检查」这条工程主线，加上几个高频的中文写作、翻译工具，装进你的 AI 编程助手。
+让任何一个 agent 冷启动进你的仓库,不问人就能理解任务、写完、自己验证、把决策写回去。人只出现在两个地方:**定意图**和**收结果**。
+
+这套 skill 就是把仓库变成这种状态的工具:一份 harness 规范打底,四个卡在人机边界上的动作,外加三个日常 Self 工具。
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![skills.sh](https://skills.sh/b/initxy/initxy-skills)](https://skills.sh/initxy/initxy-skills)
 
-- **是什么** — 8 个可组合的 agent skill，覆盖需求收敛、实现、审查、架构改进、交接，外加英译中和引导式中文写作。
-- **适合谁** — 用中文和 AI 协作写代码、又想自己掌控节奏的人；不想背上多角色重型框架，只要几件趁手的工具。
-- **解决什么** — 让 AI 不要「一句需求直接开写」，而是走一条边界清晰的工程流程；同时避免流程写太细，反而抢占模型注意力、拖累上下文。
-
 ```bash
 npx skills add initxy/initxy-skills
 ```
 
-## 亮点
+## 为什么反着来
 
-- **中文原生，不只是翻译。** 每个 skill 的指令正文（而非只有描述）都用中文写成，措辞贴近中文表达。中文对话里调用衔接自然，不会因为指令是英文而把模型悄悄带向英文输出；指令本身也好读好改。
-- **一条主线，少而清晰。** 需求到交付收敛成 `shape → implement → review` 三步，把同类工程动作合并（对照 mattpocock 的 ~20 个 skill，这里只有 6 个工程 skill）。每个 skill 只做一件事、可组合、不绑定特定工具。
-- **上下文干净。** 以单文件为主，主文件加载即用、无需跳读；细节才拆进同目录 `references/`，只在用到那一步才读，主文件始终精简。
-- **只给目标，把「怎么干」交给模型。** 模型已经足够强，skill 只讲清目标和完成标准，剩下的判断留给它。流程不堆细节，注意力放在任务本身。
-- **能力可验证，不是空话。** `shape` 是访谈式逐题追问，设计没收敛不落一字实现说明；`review` 用 P0–P3 分级输出可行动 findings；`setup` 沉淀 `AGENTS.md` / `CONTEXT.md` / ADR；`write-zh` 自带去 AI 味清单和五种可切换风格。
+模型已经够强了。教它「怎么一步步干活」的 skill 正在快速贬值:今天写死的最佳实践,下一代模型自己就会,还白占上下文。所以这套反着来,不加流程,减流程。
+
+不随模型进化的,是项目这一侧的约定:上下文放哪、怎么验证、什么算完成、怎么拦住结构和文档漂移。这些是仓库的事,稳定得多。铺好了,任何 agent 进来都能自主干活;铺不好,再聪明的模型也得反复回来问人。
+
+四条判断撑着这个取舍:
+
+- 约定槽位和动词,不约定步骤。步骤交给模型,它自己会进化;槽位(`AGENTS.md` / `CONTEXT.md` / ADR / spec)和动词(`test` / `build` / `release`)交给仓库,长期不变。
+- 反馈回路是上限。一个项目能放心交给 agent 的范围,约等于它反馈回路的质量。agent 验证不了的事就别交给它,验证弱的仓库先补验证再谈自主。
+- 仓库即记忆。spec 带着状态和进度,边做边写。换个 session 随时接上,不需要交接仪式。
+- 熵控制单列一档。功能任务保持聚焦,代价是结构必然漂移,靠 `gc` 定期收回来,不指望模型顺手维护。
+
+同类的 skill 集([mattpocock/skills](https://github.com/mattpocock/skills)、[superpowers](https://github.com/obra/superpowers)、[gstack](https://github.com/garrytan/gstack)、[ecc](https://github.com/WorldFlowAI/everything-claude-code))大多用更多 skill 覆盖更多步骤;这里反方向收,步骤归模型,约定归仓库。
+
+人只保留三个触点:定意图(`shape`)、收结果并放行不可逆动作(`review` + 审批门禁),还有一个容易被忽略的:agent 反复失败时,该改的是 harness,不是那一次的产出。反复失败几乎总意味着 context 或验证有缺口,补上,让下次不再发生。
 
 ## Skills
 
-**工程主线**（一条路走完，不达标回到上一步）：
-
 ```
-setup（一次性初始化）
+init-harness  ·  一次性铺底(新仓库、存量仓库走同一入口)
 
-shape ──► implement ──► review ──►（不达标则回到 shape）
-
-improve-architecture（架构改进，按需）
-handoff（跨 session 交接，任意阶段）
+  shape ──▶ 实现(无专门 skill:照 spec 干、跑门禁)──▶ review
+    ▲                                                  │
+    └───────── gc(大功能后 scoped · 定期 global)◀───────┘
 ```
+
+### AI Native 工程
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
-| `setup` | 初始化仓库的 agent 工作约定（`AGENTS.md`、`CONTEXT.md` / ADR 规范） | 新仓库起手，一次性 |
-| `shape` | 访谈式追问，把模糊想法收束成完整实现说明 | 需求/边界/验收标准不清时 |
-| `implement` | 按实现说明或明确任务落地，不重新发散需求 | 目标已清楚，动手写代码 |
-| `review` | 对照需求和代码库标准审查，P0–P3 分级给 findings | 检查 diff / PR，判断能否合入 |
-| `improve-architecture` | 找架构摩擦，提出把 shallow module 变 deep 的方案 | 想重构、降耦合、提升可测性时 |
-| `handoff` | 把对话和进度压缩成交接说明，让下一段 session 续接 | 换 session、跨天续接、总结进度 |
+| `init-harness` | 把仓库铺成 AI native 项目:建 `AGENTS.md`、标准动词、门禁、`docs/specs/`;存量项目先探测已有命令、包成统一入口,再如实报告验证缺口 | 接入一个项目,一次性 |
+| `shape` | 访谈式追问,把模糊想法收束成带验收标准的 spec;只定意图,不写一行实现 | 需求 / 边界 / 验收标准不清,实现前要先定方案 |
+| `review` | 先跑门禁(不绿直接打回),再对照 spec 验收标准逐条核对,给出「可合入 / 修改后再看 / 重新 shape」的结论;可合入时才归档 | 判断一个改动能不能合入 |
+| `gc` | 熵控制,发现与实施分离:文档和代码对账、清死代码、归档 spec 这类安全的直接做;要动结构的只出提案,不动手 | 大功能合入后 scoped,定期 global |
 
-跑完 `setup`，`AGENTS.md` 里会写明这条路径，照着串即可。
+没有 implement 的原因:「照 spec 干、跑门禁、算 done」写在 `AGENTS.md` 的任务流里,模型照着做就行,不必再拿一个 skill 教。实现流程属于项目 harness,不单拎出来。
 
-**通用工具**：
+### Self
 
 | Skill | 做什么 | 什么时候用 |
 |---|---|---|
-| `translate-zh` | 英译中，输出地道简体中文而非逐词直译，保留结构与术语一致 | 翻译英文文档 / Markdown / 邮件 |
-| `write-zh` | 引导式中文写作，逐节带你把文档写出来，去 AI 味、多配图 | 想被引导着写而非一键生成一整篇 |
+| `handoff` | 把当前对话和进度压成交接说明,让下一个 session 接着做 | 要交接、续接、总结进度时 |
+| `translate-zh` | 英译中,出地道简体中文而非逐词直译,保留结构和术语一致 | 翻译英文文档 / Markdown / 邮件 |
+| `write-zh` | 引导式中文写作,逐节带你写,去 AI 味、多配图 | 想被带着写,而不是一键生成整篇 |
 
-`write-zh` 的细节拆成三份按需读取的 references：`techniques`（人味从哪来）、`de-ai`（去 AI 味清单和正反例）、`styles`（五种可切换的语言风格画像）。
+## Harness 铺了什么
 
-## 快速上手
+`init-harness` 在目标仓库落下这些槽位(完整规范见 [harness.md](skills/ai-native-engineering/init-harness/references/harness.md)):
 
-安装后，在你的 AI 编程助手里：
-
-1. 进入一个项目，先跑 `setup` 建立 agent 工作约定（一次性）。
-2. 有新需求时用 `shape` 把它聊清楚，产出实现说明。
-3. 用 `implement` 按说明落地，再用 `review` 审查能否合入；不达标就回到 `shape`。
-
-需求已经很清楚时可以跳过 `shape`，直接 `implement`。翻译、写作两个工具独立使用，随时调用。
-
-## 安装
-
-需要 Node.js。直接用 npx，无需全局安装：
-
-```bash
-npx skills add initxy/initxy-skills
+```
+AGENTS.md             # 唯一入口,保持薄:任务流、门禁、语言约定
+CONTEXT.md            # 领域概念、系统边界、术语表(现状以代码为准,文档只讲「为什么」)
+docs/adr/             # 长期决策,带 status(accepted / superseded)
+docs/specs/           # 每任务一份 spec:proposed → active → done → archive/
+scripts/ 或 Makefile   # 标准动词:dev / test / lint / build / e2e / release,各一条命令
 ```
 
-每个 skill 位于 `skills/<name>/SKILL.md`，符合 skills.sh / Agent Skills 格式。
+完成的定义只有一条:**spec 验收标准逐条满足,且自动门禁全绿**。release、数据迁移、删数据这类不可逆动作另设审批门禁,必须人放行。
 
-## 设计取舍与对比
+这些槽位都贴通用约定,不发明私有格式:`AGENTS.md` 是事实标准,spec 和 ADR 都是普通 Markdown。初始化出来的项目对任何 agent 工具都是 AI native 的,不锁死在这套 skill 上。
 
-这套的取舍是「轻和少」：模型已经够强，把流程拆得太细反而抢占它的注意力、拖累上下文，所以只保留少量、边界清晰的 skill，把目标和完成标准讲明白，剩下交给模型判断。
+## 上手
 
-主要借鉴 [Matt Pocock 的 skills](https://github.com/mattpocock/skills)，也参考了 [superpowers](https://github.com/obra/superpowers)、[gstack](https://github.com/garrytan/gstack)、[Everything Claude Code](https://github.com/WorldFlowAI/everything-claude-code)（ecc）——思路可取，但落地偏重，因此只取思路、不取体量。
+1. 进项目跑 `init-harness`,一次性铺好槽位和动词。
+2. 新需求用 `shape` 谈清,落成 spec。
+3. 让 agent 照 spec 实现(任务流和完成定义已经写进 `AGENTS.md`),完事用 `review` 验收。
+4. 大功能合入后跑 scoped `gc`;再挂个定时任务,定期跑 global `gc`。
 
-和 mattpocock 的粒度差异：
-
-| | initxy-skills | [mattpocock/skills](https://github.com/mattpocock/skills) |
-|---|---|---|
-| 工程类数量 | 6 个 | 20 个左右 |
-| 需求阶段 | 一个 `shape` 完成追问、PRD、拆 issue | 分 `grill-me`、`to-prd`、`to-issues` 三步 |
-| 实现阶段 | `implement` 不绑定具体方法 | 专门的 `tdd`，强制红绿重构 |
-| 架构改进 | `improve-architecture` 一个 skill 覆盖 | 拆成发现、报告、追问多步 |
-
-底层方法一致，区别在粒度：mattpocock 把工程动作拆得细，每步一个 skill，适合希望每一步都有明确指引的人；这套把同类动作合并，skill 更少，适合希望自己掌控节奏的人。
-
-和其他集合的定位差异：
-
-| | initxy-skills | [gstack](https://github.com/garrytan/gstack) | [ecc](https://github.com/WorldFlowAI/everything-claude-code) | [superpowers](https://github.com/obra/superpowers) |
-|---|---|---|---|---|
-| 定位 | 个人日常用的轻量 skill | 虚拟工程团队 | 开箱全家桶 | 通用流程 skill |
-| 规模 | 6 工程 + 通用工具 | 23 角色 + 8 工具 | agents / commands / skills / rules / hooks / MCP 全包 | 数十个，覆盖多领域 |
-| 适合谁 | 想自己掌控流程的人 | 想要完整团队流程的人 | 想要开箱全家桶的人 | 需要流程约束的场景 |
-
-并无优劣，只是取舍不同：那几个追求覆盖全、流程完整，适合「都替我安排好」；这套追求轻和少，适合想自己拿主意的人。
+需求本来就清楚,可以跳过 `shape` 直接做。`handoff`、`translate-zh`、`write-zh` 三个 Self 工具互相独立,随时单用。
 
 ## 结构
 
-每个 skill 位于 `skills/<name>/SKILL.md`。多数 skill 单文件即可；个别（如 `write-zh`）把不常用的细节拆进同目录的 `references/`，由主文件按需引用，主文件本身保持精简。
+skill 按用途分两个文件夹:
+
+- `skills/ai-native-engineering/`:工程主线,`init-harness`、`shape`、`review`、`gc`。
+- `skills/self/`:日常工具,`handoff`、`translate-zh`、`write-zh`。
+
+每个 skill 在各自分类下的 `<name>/SKILL.md`,符合 skills.sh / Agent Skills 格式。多数单文件;`init-harness` 和 `write-zh` 把规范、模板拆进同目录 `references/`,主文件按需引用。
 
 ## License
 
