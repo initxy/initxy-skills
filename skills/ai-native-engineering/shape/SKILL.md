@@ -1,55 +1,55 @@
 ---
 name: shape
-description: 把模糊想法收束成带验收标准的 spec。用于需求讨论、方案澄清、边界/决策/验收标准不清，或实现前需要先定方案。
+description: Converge a vague idea into a spec with acceptance criteria. Use for requirement discussion, approach clarification, unclear boundaries/decisions/acceptance criteria, or when an approach must be settled before implementation.
 ---
 
 # Shape
 
-把模糊想法收束成 spec。这是人机协作的「定意图」环节：**这个模式下不写一行实现代码，设计收敛前不落一字 spec。**
+Converge a vague idea into a spec. This is the "define intent" step of human-machine collaboration: **in this mode you write no implementation code, and no spec until the design has converged.**
 
-工作方式是访谈：把每个会影响实现的点问到底，走完设计树的每个分支，直到和用户达成共同理解。spec 不是要赶着写的东西——它是设计收敛后自然落下的副产物。
+The method is an interview: press every point that affects implementation to the bottom, walk every branch of the design tree, until you and the user share the same understanding. The spec isn't something to rush out — it's the byproduct that falls out naturally once the design converges.
 
-## 红线
+## Red lines
 
-- ❌ 问了两三个问题就觉得「差不多了」开始成稿。只要还有一个会改变实现路径、边界或验收标准、却没和用户确认的点，访谈就没结束。
-- ❌ 设计没收敛就动手写 spec。
-- ❌ 写完 spec 顺手开始实现。shape 到成稿为止，实现由用户另行发起。
+- ❌ Asking two or three questions and deciding it's "close enough" to start drafting. As long as one point that would change the implementation path, boundary, or acceptance criteria remains unconfirmed with the user, the interview isn't over.
+- ❌ Writing the spec before the design converges.
+- ❌ Sliding from finished spec into implementation. Shape ends at the finalized draft; implementation is started separately by the user.
 
-## 访谈
+## Interview
 
-开始前先读 `CONTEXT.md`、`docs/adr/`、相关代码和 `docs/specs/` 里的相关 spec，用一句话复述用户真正要达成什么，然后进入追问：
+Before starting, read `CONTEXT.md`, `docs/adr/`, the relevant code, and any related spec in `docs/specs/`; restate in one sentence what the user actually wants to achieve, then move into questioning:
 
-- 一次只问一个问题，带上你的推荐答案和理由，让用户确认或推翻，而不是从零作答。
-- 沿设计树逐分支走。设计树的定义：每个会改变实现路径、边界或验收标准的决策点是一个节点；每定下一个节点，检查它引出了哪些新的下游决策点，加入待问清单。先定前置决策，再问依赖它的下游决策。
-- 能从代码、文档、上下文查到的自己查，不拿来问用户。
-- 只问会改变实现路径、边界或验收标准的问题。
+- Ask one question at a time, carrying your recommended answer and the reasoning, so the user confirms or overrides rather than answering from scratch.
+- Walk the design tree branch by branch. Definition of the design tree: every decision point that would change the implementation path, boundary, or acceptance criteria is a node; each time you settle a node, check what new downstream decision points it opens and add them to the queue. Settle prerequisite decisions first, then the ones that depend on them.
+- Look up whatever you can from code, docs, and context; don't bring it to the user as a question.
+- Only ask questions that would change the implementation path, boundary, or acceptance criteria.
 
-**例外**：用户明确说「只要个方案 / 别访谈 / 直接给建议」时，直接给推荐方案和理由，标出替他做的关键假设。
+**Exception**: when the user explicitly says "just give me an approach / don't interview / recommend directly," give the recommended approach and reasoning straight, flagging the key assumptions you made on their behalf.
 
-## 何时算谈完
+## When the interview is done
 
-- 待问清单已清空：最近一个决策定下后没有引出新的决策点。
-- 所有会改变实现路径、边界、验收标准的决策都已确认。
-- 没有阻塞实现的未决项。
+- The queue is empty: settling the most recent decision opened no new decision points.
+- Every decision that would change the implementation path, boundary, or acceptance criteria is confirmed.
+- No open item blocks implementation.
 
-判断不确定时，默认「还没谈完」，继续问。
+When unsure, default to "not done yet" and keep asking.
 
-谈的过程中决策一旦定下来就地沉淀：新领域术语、系统边界写入或建议写入 `CONTEXT.md`；回滚成本高、未来会被追问原因的取舍写入 ADR；一次性细节不沉淀。
+Whenever a decision settles during the interview, record it in place: new domain terms and system boundaries go into (or are proposed for) `CONTEXT.md`; trade-offs that are costly to reverse and will be questioned later go into an ADR; one-off details aren't recorded.
 
-## 成稿
+## Finalizing
 
-只有「何时算谈完」全满足才进入这一步。按 harness 约定写 spec：
+Enter this step only when every item under "When the interview is done" holds. Write the spec per the harness convention:
 
-- 路径 `docs/specs/<YYYY-MM-DD>-<slug>.md`，格式按仓库里的 `docs/specs/TEMPLATE.md`。仓库没有模板时：frontmatter 写 `status` 和 `created`，正文按 Goal / Non-goals / Context / Decisions / Plan / Acceptance criteria / Risks / Progress log。
-- 谈完就要开工的标 `active`；先进队列、以后再做的标 `proposed`。
-- 小任务可以只在对话里输出，不落盘。
-- slug 用英文；正文用中文，技术术语按 `AGENTS.md` 语言约定保留英文原词。
+- Path `docs/specs/<YYYY-MM-DD>-<slug>.md`, format per the repo's `docs/specs/TEMPLATE.md`. When the repo has no template: frontmatter carries `status` and `created`, body follows Goal / Non-goals / Context / Decisions / Plan / Acceptance criteria / Risks / Progress log.
+- Mark it `active` if implementation starts right after the interview; mark it `proposed` if it's queued for later.
+- A small task can be output in the conversation only, not written to disk.
+- Slug in English (kebab-case).
 
-## 完成标准
+## Completion criteria
 
-- 访谈已收敛（满足「何时算谈完」每一条）。
-- `Goal` 一句话说清；`Non-goals` 排除了最容易蔓延的范围。
-- `Acceptance criteria` 能被 review 逐条核对。
-- `Plan` 能看出任务拆分和依赖顺序。
-- 长期信息已写入或明确建议写入 `CONTEXT.md` / ADR。
-- shape 到此为止，没有越界去实现。
+- The interview has converged (every item under "When the interview is done" holds).
+- `Goal` says it in one sentence; `Non-goals` excludes the scope most likely to creep.
+- `Acceptance criteria` can be checked off one by one in review.
+- `Plan` shows the task breakdown and dependency order.
+- Long-term information is written into, or explicitly proposed for, `CONTEXT.md` / ADR.
+- Shape stops here, with no overstep into implementation.

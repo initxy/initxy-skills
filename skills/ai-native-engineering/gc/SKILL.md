@@ -1,48 +1,48 @@
 ---
 name: gc
-description: 项目熵控制（gc）：文档与代码对账、清理死代码和过期文档、归档 spec、扫描摩擦并生成架构改进提案。用于清理项目、文档过期失真、找重构方向、大功能合入后（scoped）或定期维护（global）。
+description: Project entropy control (gc) — reconcile docs against code, clear dead code and stale docs, archive specs, scan friction, and generate architecture-improvement proposals. Use to clean up a project, when docs have drifted from reality, to find refactor directions, after a large feature merges (scoped), or for periodic maintenance (global).
 ---
 
 # GC
 
-熵控制。功能任务保持聚焦的代价是结构和文档漂移必然累积，这个 skill 定期把它收回来。
+Entropy control. The price of keeping feature work focused is that structural and doc drift accumulate; this skill periodically pulls it back.
 
-核心规则是**发现与实施分离**：安全的直接做（门禁保护），动结构的只出提案、不动手。
+The core rule is **separate discovery from execution**: do the safe things directly (gate-protected), and for anything that touches structure, only propose — don't act.
 
-## 范围
+## Scope
 
-- **scoped**：大功能合入后触发，只看本次改动区域。
-- **global**：定期触发（建议每周），全仓库。
+- **scoped**: triggered after a large feature merges, looking only at the changed area.
+- **global**: triggered periodically (weekly suggested), across the whole repo.
 
-用户没指明时，根据触发场景判断并说明按哪种范围执行。
+When the user doesn't specify, judge from the trigger context and state which scope you're running.
 
-## 动作
+## Actions
 
-### 1. 对账（直接执行，门禁保护）
+### 1. Reconcile (execute directly, gate-protected)
 
-- `docs/specs/` 里 `done` 未归档的移入 `archive/`；长期 stale 的 `active` / `proposed` 标注出来问用户，不擅自删。
-- `CONTEXT.md` 逐条和代码对账：代码是「现状」的唯一事实源，对不上就改文档。
-- 被新决策推翻的 ADR 标 `superseded`，不删。
-- 死代码、指向已删文件的引用、过期 TODO：删除后全套自动门禁绿才算数。
+- Move `done`-but-unarchived specs in `docs/specs/` into `archive/`; flag long-stale `active` / `proposed` ones for the user, don't delete on your own.
+- Reconcile `CONTEXT.md` against code entry by entry: code is the single source of truth for "what is"; where they don't match, fix the doc.
+- Mark ADRs overturned by newer decisions `superseded`, don't delete.
+- Dead code, references to deleted files, stale TODOs: only counts once the full automated gate suite is green after removal.
 
-### 2. 扫描（只记录，不修改）
+### 2. Scan (record only, don't modify)
 
-- 重复模式（rule of three 已满足的抽象机会）、shallow module、拖慢反馈回路的测试。
-- **优先挖 spec Progress log 里的摩擦记录**：agent 在哪里重试、困惑、被慢测试拖住——哪里让 agent 干活最费劲，哪里最该重构。这比抽象的审美判断精准。
+- Duplicate patterns (abstraction opportunities where the rule of three is met), shallow modules, tests that drag the feedback loop.
+- **Mine the friction notes in spec Progress logs first**: where the agent retried, got confused, or got stuck on slow tests — wherever the agent worked hardest is where a refactor pays most. This beats abstract aesthetic judgment.
 
-### 3. 提案（不动手）
+### 3. Propose (don't act)
 
-- 架构级改动写成 `docs/specs/` 里 status 为 `proposed` 的 spec：动机（引用具体摩擦或扫描证据）、预期收益、验收标准。
-- 提案进队列等人挑；挑中的走 shape → 实现的正常流程。
+- Write architecture-level changes as `proposed`-status specs in `docs/specs/`: motivation (cite specific friction or scan evidence), expected benefit, acceptance criteria.
+- Proposals queue for a human to pick; a picked one goes through the normal shape → implement flow.
 
-## 红线
+## Red lines
 
-- 不混功能改动；本 skill 的一切修改都不改变行为。
-- 每一步清理后跑门禁，红了就回滚该步。
-- 判断不了 stale 与否的，问，不要删。
+- Don't mix in feature changes; every change this skill makes leaves behavior unchanged.
+- Run the gates after each cleanup step; if red, roll that step back.
+- When you can't judge whether something is stale, ask — don't delete.
 
-## 完成标准
+## Completion criteria
 
-- 对账类改动已落地且门禁全绿。
-- 每个提案都有动机、证据和验收标准，能直接被 shape / 实现接手。
-- 输出一份简短报告：清了什么、发现了什么、提了什么案、哪些留给用户决定。
+- Reconciliation changes are landed and all gates green.
+- Every proposal has a motivation, evidence, and acceptance criteria, ready for shape / implement to pick up.
+- Output a short report: what was cleaned, what was found, what was proposed, and what's left for the user to decide.

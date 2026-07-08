@@ -1,50 +1,50 @@
 ---
 name: review
-description: 验收实现：先门禁后人工，对照 spec 验收标准判断可否合入，并做收尾沉淀归档。用于 review、检查 diff/PR、验收、判断可合入。
+description: Accept an implementation — gates first, then human judgment — deciding mergeability against the spec's acceptance criteria, and wrapping up with distillation and archiving. Use for review, checking a diff/PR, acceptance, or judging mergeability.
 ---
 
 # Review
 
-验收，不是逐行复查。机器能查的交给门禁；这个 skill 只做门禁盖不住的判断。
+Acceptance, not a line-by-line recheck. What a machine can check goes to the gates; this skill only makes the judgments the gates can't cover.
 
-## 前置
+## Prerequisites
 
-- 先跑 `AGENTS.md` 约定的自动门禁。**门禁不绿直接打回，不进入人工审查。**
-- 仓库没有 `AGENTS.md` 或没约定门禁时，用仓库现有的 test / lint / build 命令代替；连可跑的验证都找不到就如实说明，并把「缺验证」本身写进 findings。
-- 找到对应 spec（默认查 `docs/specs/`）。没有需求来源时，按代码质量和风险审查，并明确说明无法判断需求符合度。
+- Run the automated gates defined in `AGENTS.md` first. **Gates not green → reject immediately, no human review.**
+- When the repo has no `AGENTS.md` or no defined gates, substitute its existing test / lint / build commands; if there's no runnable verification at all, say so honestly and write "verification missing" into the findings itself.
+- Find the corresponding spec (default: search `docs/specs/`). With no requirement source, review by code quality and risk, and state clearly that requirement conformance can't be judged.
 
-## 审查
+## Review
 
-1. **对照验收标准**：逐条核对 spec 的 Acceptance criteria，每条给证据（测试、输出、代码位置），不接受「应该没问题」。
-2. **检查范围**：有没有蔓延到 Non-goals，有没有混入无关重构。
-3. **检查门禁盖不住的风险**：边界条件、数据迁移、兼容性、安全、并发、错误处理。
-4. **检查测试**：新增行为的关键路径和失败路径是否有覆盖。
+1. **Against the acceptance criteria**: check off each of the spec's Acceptance criteria, with evidence (test, output, code location); "should be fine" is not accepted.
+2. **Check scope**: any creep into Non-goals, any unrelated refactor mixed in.
+3. **Check risks the gates can't cover**: boundary conditions, data migration, compatibility, security, concurrency, error handling.
+4. **Check tests**: whether the critical path and failure path of new behavior are covered.
 
 ## Findings
 
-按严重程度排序，只写可行动问题：
+Sorted by severity, only actionable issues:
 
 ```md
-- [P1] 标题
-  文件/位置：
-  问题 / 影响 / 建议：
+- [P1] Title
+  File/location:
+  Problem / Impact / Suggestion:
 ```
 
-`P0` 数据丢失、严重安全、核心流程不可用；`P1` 合入前必须修；`P2` 边界问题、测试缺口；`P3` 小问题，不阻塞。
+`P0` data loss, serious security, core flow unusable; `P1` must fix before merge; `P2` boundary issue, test gap; `P3` minor, non-blocking.
 
 ## Verdict
 
-结论三选一：**可合入 / 修改后再看 / 需要重新 shape**。没有问题时明确说未发现阻塞问题。
+One of three: **mergeable / revise and re-review / needs re-shape**. When there are no issues, say explicitly that no blocking issues were found.
 
-## 收尾沉淀（结论为可合入时）
+## Wrap-up distillation (when the verdict is mergeable)
 
-- spec 状态改 `done`，移入 `docs/specs/archive/`。
-- 实现中新出现的稳定术语、系统边界进 `CONTEXT.md`；长期决策进 ADR，被推翻的旧 ADR 标 `superseded`。
-- 本次是大功能时，建议对改动区域跑一次 scoped `gc`。
+- Flip the spec's status to `done`, move it into `docs/specs/archive/`.
+- Stable terms and system boundaries that emerged during implementation go into `CONTEXT.md`; long-term decisions go into an ADR, with any overturned old ADR marked `superseded`.
+- If this was a large feature, suggest a scoped `gc` over the changed area.
 
-## 完成标准
+## Completion criteria
 
-- 门禁结果已确认，验收标准逐条有证据。
-- findings 都有明确影响和建议；没有把风格偏好伪装成缺陷。
-- 结论能直接支撑下一步动作。
-- 可合入时，沉淀和归档已完成或明确列出待办。
+- Gate results confirmed; each acceptance criterion has evidence.
+- Every finding has a clear impact and suggestion; no style preference disguised as a defect.
+- The verdict directly supports the next action.
+- When mergeable, distillation and archiving are done or explicitly listed as pending.

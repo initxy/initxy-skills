@@ -1,8 +1,8 @@
 # initxy-skills
 
-让任何一个 agent 冷启动进你的仓库,不问人就能理解任务、写完、自己验证、把决策写回去。人只出现在两个地方:**定意图**和**收结果**。
+**English** · [简体中文](README.zh.md)
 
-这套 skill 就是把仓库变成这种状态的工具:一份 harness 规范打底,四个卡在人机边界上的动作,外加三个日常 Self 工具。
+Turn your repo into a place where any agent can cold-start, understand the task, implement it, verify itself, and write its decisions back — no human in the loop except to **define intent** and **collect results**.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![skills.sh](https://skills.sh/b/initxy/initxy-skills)](https://skills.sh/initxy/initxy-skills)
@@ -11,85 +11,96 @@
 npx skills add initxy/initxy-skills
 ```
 
-## 为什么反着来
+## Why it's different
 
-模型已经够强了。教它「怎么一步步干活」的 skill 正在快速贬值:今天写死的最佳实践,下一代模型自己就会,还白占上下文。所以这套反着来,不加流程,减流程。
+Most skill collections grow by adding skills — one per workflow step, teaching the model *how* to do each thing. That bet is depreciating fast: what you hardcode as best practice today, the next model already knows, and it just burns context.
 
-不随模型进化的,是项目这一侧的约定:上下文放哪、怎么验证、什么算完成、怎么拦住结构和文档漂移。这些是仓库的事,稳定得多。铺好了,任何 agent 进来都能自主干活;铺不好,再聪明的模型也得反复回来问人。
+This set bets the other way. It **removes** process and invests in the one thing that doesn't evolve with the model — your repo's conventions: where context lives, how to verify, what counts as done, how to stop drift. The steps in between go to the model.
 
-四条判断撑着这个取舍:
+| | Typical skill collections | initxy-skills |
+|---|---|---|
+| The bet | More skills cover more steps | Fewer skills; the repo owns the conventions |
+| Teaches the model | *How* to work, step by step | Nothing — steps are the model's job |
+| Invests in | Workflow procedures | Slots & verbs, stable across model generations |
+| Over time | Depreciates as models improve | Holds — repo conventions don't move |
 
-- 约定槽位和动词,不约定步骤。步骤交给模型,它自己会进化;槽位(`AGENTS.md` / `CONTEXT.md` / ADR / spec)和动词(`test` / `build` / `release`)交给仓库,长期不变。
-- 反馈回路是上限。一个项目能放心交给 agent 的范围,约等于它反馈回路的质量。agent 验证不了的事就别交给它,验证弱的仓库先补验证再谈自主。
-- 仓库即记忆。spec 带着状态和进度,边做边写。换个 session 随时接上,不需要交接仪式。
-- 熵控制单列一档。功能任务保持聚焦,代价是结构必然漂移,靠 `gc` 定期收回来,不指望模型顺手维护。
+Peers like [mattpocock/skills](https://github.com/mattpocock/skills), [superpowers](https://github.com/obra/superpowers), [gstack](https://github.com/garrytan/gstack), and [ecc](https://github.com/WorldFlowAI/everything-claude-code) mostly cover more steps with more skills. This one goes the other direction: steps to the model, conventions to the repo.
 
-同类的 skill 集([mattpocock/skills](https://github.com/mattpocock/skills)、[superpowers](https://github.com/obra/superpowers)、[gstack](https://github.com/garrytan/gstack)、[ecc](https://github.com/WorldFlowAI/everything-claude-code))大多用更多 skill 覆盖更多步骤;这里反方向收,步骤归模型,约定归仓库。
+## The bet
 
-人只保留三个触点:定意图(`shape`)、收结果并放行不可逆动作(`review` + 审批门禁),还有一个容易被忽略的:agent 反复失败时,该改的是 harness,不是那一次的产出。反复失败几乎总意味着 context 或验证有缺口,补上,让下次不再发生。
+A repo is AI-native when any agent can cold-start into it and — without asking a human — understand the task, implement it, verify itself, and write decisions back. The human shows up only twice: **define intent** and **collect results**.
+
+Four calls hold up the trade-off:
+
+- **Fix slots and verbs, not steps.** Steps belong to the model and evolve with it. Slots (`AGENTS.md` / `CONTEXT.md` / ADR / spec) and verbs (`test` / `build` / `release`) belong to the repo and stay stable.
+- **The feedback loop is the ceiling.** How much you can safely hand an agent ≈ the quality of the repo's feedback loop. What the agent can't verify, don't hand it — shore up verification before autonomy.
+- **The repo is the memory.** Specs carry status and progress, written as you go. Pick up in any session with no handoff ritual.
+- **Entropy control is its own track.** Feature work stays focused, so structure drifts by design; `gc` pulls it back periodically instead of relying on the model to tidy in passing.
+
+There's a quieter third touchpoint too: when an agent fails repeatedly, fix the **harness**, not that one output. Repeated failure almost always means a gap in context or verification — patch it so next time it doesn't happen.
 
 ## Skills
 
 ```
-init-harness  ·  一次性铺底(新仓库、存量仓库走同一入口)
+init-harness  ·  one-time setup (new or existing repo — same entry)
 
-  shape ──▶ 实现(无专门 skill:照 spec 干、跑门禁)──▶ review
-    ▲                                                  │
-    └───────── gc(大功能后 scoped · 定期 global)◀───────┘
+  shape ──▶ implement (no skill: follow the spec, run the gates) ──▶ review
+    ▲                                                                │
+    └────────── gc (scoped after big features · periodic global) ◀───┘
 ```
 
-### AI Native 工程
+### AI-native engineering
 
-| Skill | 做什么 | 什么时候用 |
+| Skill | What it does | When to use |
 |---|---|---|
-| `init-harness` | 把仓库铺成 AI native 项目:建 `AGENTS.md`、标准动词、门禁、`docs/specs/`;存量项目先探测已有命令、包成统一入口,再如实报告验证缺口 | 接入一个项目,一次性 |
-| `shape` | 访谈式追问,把模糊想法收束成带验收标准的 spec;只定意图,不写一行实现 | 需求 / 边界 / 验收标准不清,实现前要先定方案 |
-| `review` | 先跑门禁(不绿直接打回),再对照 spec 验收标准逐条核对,给出「可合入 / 修改后再看 / 重新 shape」的结论;可合入时才归档 | 判断一个改动能不能合入 |
-| `gc` | 熵控制,发现与实施分离:文档和代码对账、清死代码、归档 spec 这类安全的直接做;要动结构的只出提案,不动手 | 大功能合入后 scoped,定期 global |
+| `init-harness` | Lays the harness into a repo: `AGENTS.md`, standard verbs, gates, `docs/specs/`. For existing repos, first probes current commands, wraps them behind one entry point, then reports the verification gap honestly. | Onboarding a project, one-time |
+| `shape` | Interview-style questioning that converges a vague idea into a spec with acceptance criteria — defines intent only, writes no implementation. | Requirements / boundaries / acceptance criteria unclear, before implementing |
+| `review` | Runs the gates first (not green → rejected), then checks the spec's acceptance criteria one by one, and returns a verdict: mergeable / revise / re-shape. Archives on merge. | Deciding whether a change can merge |
+| `gc` | Entropy control, discovery separated from execution: safe things (doc-vs-code reconciliation, dead-code cleanup, spec archiving) done directly; structural changes proposed only. | Scoped after a big feature merges; periodic global |
 
-没有 implement 的原因:「照 spec 干、跑门禁、算 done」写在 `AGENTS.md` 的任务流里,模型照着做就行,不必再拿一个 skill 教。实现流程属于项目 harness,不单拎出来。
+No `implement` skill: "follow the spec, run the gates, call it done" lives in the task flow in `AGENTS.md`. The implementation flow belongs to the project harness, not a separate skill.
 
 ### Self
 
-| Skill | 做什么 | 什么时候用 |
+| Skill | What it does | When to use |
 |---|---|---|
-| `handoff` | 把当前对话和进度压成交接说明,让下一个 session 接着做 | 要交接、续接、总结进度时 |
-| `translate-zh` | 英译中,出地道简体中文而非逐词直译,保留结构和术语一致 | 翻译英文文档 / Markdown / 邮件 |
-| `write-zh` | 引导式中文写作,逐节带你写,去 AI 味、多配图 | 想被带着写,而不是一键生成整篇 |
+| `handoff` | Compresses the current conversation and progress into a handoff note so the next session continues. | Handing off, resuming, summarizing progress |
+| `translate-zh` | English → Chinese, producing idiomatic Simplified Chinese rather than a literal gloss; preserves structure and term consistency. | Translating English docs / Markdown / email |
+| `write-zh` | Guided Chinese writing, section by section — de-AI'd, diagram-rich. | When you want to be guided through writing, not one-shot generation |
 
-## Harness 铺了什么
+## What the harness lays down
 
-`init-harness` 在目标仓库落下这些槽位(完整规范见 [harness.md](skills/ai-native-engineering/init-harness/references/harness.md)):
+`init-harness` drops these slots into the target repo (full spec: [harness.md](skills/ai-native-engineering/init-harness/references/harness.md)):
 
 ```
-AGENTS.md             # 唯一入口,保持薄:任务流、门禁、语言约定
-CONTEXT.md            # 领域概念、系统边界、术语表(现状以代码为准,文档只讲「为什么」)
-docs/adr/             # 长期决策,带 status(accepted / superseded)
-docs/specs/           # 每任务一份 spec:proposed → active → done → archive/
-scripts/ 或 Makefile   # 标准动词:dev / test / lint / build / e2e / release,各一条命令
+AGENTS.md              # single thin entry point: task flow, gates, language
+CONTEXT.md             # domain concepts, system boundaries, glossary ("why", not "what is")
+docs/adr/              # long-term decisions with status (accepted / superseded)
+docs/specs/            # one spec per task: proposed → active → done → archive/
+scripts/ or Makefile   # standard verbs: dev / test / lint / build / e2e / release
 ```
 
-完成的定义只有一条:**spec 验收标准逐条满足,且自动门禁全绿**。release、数据迁移、删数据这类不可逆动作另设审批门禁,必须人放行。
+The definition of done is one line: **every acceptance criterion met, and all automated gates green.** Irreversible actions — release, data migration, data deletion — sit behind an approval gate a human must clear.
 
-这些槽位都贴通用约定,不发明私有格式:`AGENTS.md` 是事实标准,spec 和 ADR 都是普通 Markdown。初始化出来的项目对任何 agent 工具都是 AI native 的,不锁死在这套 skill 上。
+Every slot follows a common convention rather than a private format: `AGENTS.md` is the de-facto standard; specs and ADRs are plain Markdown. A repo you initialize reads as AI-native to any agent tool, not locked to this set.
 
-## 上手
+## Getting started
 
-1. 进项目跑 `init-harness`,一次性铺好槽位和动词。
-2. 新需求用 `shape` 谈清,落成 spec。
-3. 让 agent 照 spec 实现(任务流和完成定义已经写进 `AGENTS.md`),完事用 `review` 验收。
-4. 大功能合入后跑 scoped `gc`;再挂个定时任务,定期跑 global `gc`。
+1. Run `init-harness` in the project to lay down the slots and verbs, once.
+2. Talk a new requirement through with `shape`, land it as a spec.
+3. Let the agent implement against the spec (the task flow and definition of done are already in `AGENTS.md`), then accept with `review`.
+4. After a big feature merges, run a scoped `gc`; schedule a periodic global `gc` on top.
 
-需求本来就清楚,可以跳过 `shape` 直接做。`handoff`、`translate-zh`、`write-zh` 三个 Self 工具互相独立,随时单用。
+If the requirement is already clear, skip `shape` and go straight to implementation. `handoff`, `translate-zh`, and `write-zh` are independent — use any of them standalone.
 
-## 结构
+## Structure
 
-skill 按用途分两个文件夹:
+Skills are split into two folders by purpose:
 
-- `skills/ai-native-engineering/`:工程主线,`init-harness`、`shape`、`review`、`gc`。
-- `skills/self/`:日常工具,`handoff`、`translate-zh`、`write-zh`。
+- `skills/ai-native-engineering/` — the engineering line: `init-harness`, `shape`, `review`, `gc`.
+- `skills/self/` — everyday tools: `handoff`, `translate-zh`, `write-zh`.
 
-每个 skill 在各自分类下的 `<name>/SKILL.md`,符合 skills.sh / Agent Skills 格式。多数单文件;`init-harness` 和 `write-zh` 把规范、模板拆进同目录 `references/`,主文件按需引用。
+Each skill is a `<name>/SKILL.md` under its category, in skills.sh / Agent Skills format. Most are single-file; `init-harness` and `write-zh` split their spec and templates into a sibling `references/` directory, referenced on demand.
 
 ## License
 

@@ -1,95 +1,95 @@
-# Harness 规范
+# Harness spec
 
-这份规范定义什么是「AI native 项目」。`init-harness` 按它初始化仓库；`shape` / `review` / `gc` 依赖它运转。
+This spec defines what an "AI-native project" is. `init-harness` initializes a repo against it; `shape` / `review` / `gc` depend on it to run.
 
-它约定的是**槽位和动词**，不是步骤——步骤是模型的事，会随模型进化；槽位和动词是项目的事，长期稳定。
+What it fixes is **slots and verbs**, not steps — steps are the model's job and evolve with the model; slots and verbs are the project's job and stay stable.
 
-## 定义
+## Definition
 
-一句可检验的话：
+One checkable sentence:
 
-> 任何一个 agent 冷启动进入仓库，能在不问人的情况下理解任务、完成实现、自行验证、把决策沉淀回仓库——人只在「定意图」和「收结果」两处出现。
+> Any agent cold-starting into the repo can, without asking a human, understand the task, complete the implementation, verify it itself, and write its decisions back into the repo — the human appears only at "define intent" and "collect results."
 
-拆成四个性质：
+Broken into four properties:
 
-| 性质 | 含义 | 载体 |
+| Property | Meaning | Carrier |
 |---|---|---|
-| 自描述 | 意图、领域概念、边界、历史决策都在仓库里，不在某个人脑子里 | `AGENTS.md` / `CONTEXT.md` / ADR |
-| 自验证 | 测试、构建、检查是一条命令能跑的动词，agent 以此形成反馈回路 | 标准动词 + 门禁 |
-| 自记录 | 决策和进度是干活的副产品，边做边写回仓库，不是事后仪式 | spec 带状态和 Progress log |
-| 端到端可操作 | run / release / deploy 也是脚本化动词，agent 能把改动送到终点 | 动词 + 审批门禁 |
+| Self-describing | Intent, domain concepts, boundaries, and past decisions live in the repo, not in someone's head | `AGENTS.md` / `CONTEXT.md` / ADR |
+| Self-verifying | Test, build, and check are one-command verbs; the agent forms its feedback loop from them | Standard verbs + gates |
+| Self-recording | Decisions and progress are a byproduct of the work, written back as you go, not an after-the-fact ritual | Spec with status + Progress log |
+| End-to-end operable | run / release / deploy are scripted verbs too, so the agent can carry a change to the finish line | Verbs + approval gates |
 
-一条硬原则贯穿：**项目的 AI native 程度上限 ≈ 反馈回路的质量。** agent 无法验证的事情，就不能放心交给 agent 做。验证薄弱的仓库，先补验证，再谈自主。
+One hard principle runs through it all: **a project's AI-nativeness is capped by the quality of its feedback loop.** What an agent can't verify, you can't safely hand to an agent. A repo with weak verification: shore up verification first, talk about autonomy second.
 
-## 槽位
+## Slots
 
 ```
-AGENTS.md            # 唯一入口，保持薄：任务流、门禁、语言约定，指向其余槽位
-CONTEXT.md           # 领域概念、系统边界、术语表
-docs/adr/            # 长期决策，带 status（accepted / superseded）
-docs/specs/          # 每任务一份 spec：意图 + 验收标准 + 状态 + 进度
-scripts/ 或 Makefile  # 标准动词
+AGENTS.md            # single entry point, kept thin: task flow, gates, language; points to the other slots
+CONTEXT.md           # domain concepts, system boundaries, glossary
+docs/adr/            # long-term decisions, with status (accepted / superseded)
+docs/specs/          # one spec per task: intent + acceptance criteria + status + progress
+scripts/ or Makefile # standard verbs
 ```
 
-- `CLAUDE.md` 等工具入口只引用 `AGENTS.md`，不放内容。
-- 不创建空文件占位；槽位在有真实内容时才出现。
-- 尽量贴通用约定（`AGENTS.md` 是事实标准），不发明私有格式——初始化出来的项目对任何 agent 工具都应该是 AI native 的。
+- Tool entry points like `CLAUDE.md` only reference `AGENTS.md`; they hold no content.
+- Don't create empty placeholder files; a slot appears once it has real content.
+- Stay close to common conventions (`AGENTS.md` is the de-facto standard); don't invent private formats — a project you initialize should read as AI-native to any agent tool.
 
-## 动词
+## Verbs
 
-`dev` / `test` / `lint` / `build` / `e2e` / `release`，每个动词一条命令，写在 `AGENTS.md` 里。
+`dev` / `test` / `lint` / `build` / `e2e` / `release`, one command per verb, written in `AGENTS.md`.
 
-- **包装，不替换**：存量项目把已有命令包成统一入口即可，不要求换工具。
-- 没有的动词不硬造；清单之外的（如 `migrate`）照样收进来。
-- agent 的反馈回路 = 改动后跑相关动词；动词输出必须可判读（退出码、报错信息）。
+- **Wrap, don't replace**: for an existing repo, wrap current commands into a unified entry point; don't require switching tools.
+- Don't fabricate a verb you don't have; pull in ones outside the list (e.g. `migrate`) all the same.
+- The agent's feedback loop = run the relevant verb after a change; verb output must be machine-readable (exit code, error message).
 
-## 门禁与完成定义
+## Gates and the definition of done
 
-**done = spec 验收标准逐条满足 + 约定门禁全绿**，两者缺一不可。
+**done = every acceptance criterion met + all agreed gates green.** Both are required.
 
-门禁分两级：
+Gates come in two levels:
 
-- **自动门禁**：test / lint / build 等，agent 自跑自判，绿了才有资格叫 done。
-- **审批门禁**：不可逆或对外的动作——release、数据迁移、删除数据、对外发布——必须人放行。
+- **Automated gates**: test / lint / build and the like — the agent runs and judges them itself; green is the price of calling something done.
+- **Approval gates**: irreversible or outward-facing actions — release, data migration, data deletion, external publishing — require a human to sign off.
 
-验证覆盖弱的项目门禁从严（agent 自主范围小），随覆盖补齐逐步放权。
+A project with weak verification coverage runs stricter gates (smaller autonomous scope for the agent), loosening as coverage fills in.
 
-## Spec 生命周期
+## Spec lifecycle
 
-spec 是任务的记忆体，也是跨 session 续接的全部依据——不需要额外的交接文档。
+The spec is the task's memory, and the entire basis for resuming across sessions — no separate handoff doc needed.
 
-- 路径 `docs/specs/<YYYY-MM-DD>-<slug>.md`，slug 用英文；格式按 `docs/specs/TEMPLATE.md`。
-- 状态机：`proposed`（提案排队）→ `active`（实现中）→ `done`（review 通过）→ 移入 `docs/specs/archive/`。
-- spec 是活文档：实现中的进度、决策变更、摩擦（重试、困惑、拖后腿的测试）随手写进 Progress log。摩擦记录是 `gc` 生成架构提案的主要信号源。
-- spec 是一次性产物，代码注释不要引用它；长期内容在 review 收尾时转入 `CONTEXT.md` / ADR。
+- Path `docs/specs/<YYYY-MM-DD>-<slug>.md`, slug in English; format per `docs/specs/TEMPLATE.md`.
+- State machine: `proposed` (queued) → `active` (implementing) → `done` (review passed) → moved to `docs/specs/archive/`.
+- The spec is a living doc: progress, decision changes, and friction (retries, confusion, tests that drag) go into the Progress log as you implement. Friction notes are the main signal source for `gc`'s architecture proposals.
+- The spec is a one-shot artifact; code comments must not reference it. Long-term content moves into `CONTEXT.md` / ADR when review wraps up.
 
-## 文档分工与可 GC 约定
+## Doc division of labor and the GC-able convention
 
-**代码是「现状」的唯一事实源；文档只负责「为什么」和「是什么概念」。** 两者冲突时改文档。
+**Code is the single source of truth for "what is"; docs only carry "why" and "what concept."** When they conflict, fix the docs.
 
-让 staleness 可机械判定，GC 才能从判断题变成对账题：
+For staleness to be judged mechanically — turning GC from a judgment call into a reconciliation pass:
 
-- spec 带状态和日期。
-- ADR 带 status；被新决策推翻的标 `superseded`，不删。
-- `CONTEXT.md` 条目尽量指向可验证的代码位置。
+- Specs carry status and date.
+- ADRs carry status; one overturned by a newer decision is marked `superseded`, not deleted.
+- `CONTEXT.md` entries point to verifiable code locations where possible.
 
-## 行为与结构分离
+## Behavior / structure separation
 
-- 功能任务改行为，维护任务改结构，**不混在一个 diff**：分开跑各自的验证，失败信号才不混淆。
-- 功能任务保持聚焦（不顺手重构）的代价是结构漂移必然累积，所以熵控制是独立的常态动作，见下节。
+- Feature work changes behavior; maintenance work changes structure — **never in one diff**: run their verifications separately so failure signals don't get muddled.
+- The price of keeping feature work focused (no drive-by refactors) is that structural drift accumulates, so entropy control is a separate, standing action — see below.
 
-## 熵控制
+## Entropy control
 
-| 层 | 触发 | 做什么 |
+| Layer | Trigger | What it does |
 |---|---|---|
-| 随手层 | 每个任务 review 收尾 | 归档 spec、更新 `CONTEXT.md` / ADR、只清理碰过的文件 |
-| 里程碑层 | 大功能合入后 | 对改动区域跑 `gc`（scoped） |
-| 全局层 | 定期（建议每周） | 全仓库 `gc`：文档对账 + 摩擦扫描 + 架构提案 |
+| Inline | Each task's review wrap-up | Archive the spec, update `CONTEXT.md` / ADR, clean only the files you touched |
+| Milestone | After a large feature merges | Run `gc` over the changed area (scoped) |
+| Global | Periodically (weekly suggested) | Whole-repo `gc`: doc reconciliation + friction scan + architecture proposals |
 
-架构重构宁可低频、批量——模式浮现（rule of three）才是动手时机；文档 GC 高频、自动。
+Architectural refactors should be infrequent and batched — a pattern emerging (rule of three) is the moment to act; doc GC is frequent and automatic.
 
-## 人的三个触点
+## The human's three touchpoints
 
-1. **定意图**：做什么、取舍、品味（`shape`）。
-2. **收结果**：验收标准外的判断（产品手感、UX），加审批门禁的放行（`review` + 审批）。
-3. **修 harness 而不是修产出**：agent 反复失败或反复问同一类问题，说明 context 或验证有缺口；正确动作是补 harness，让下一次不再发生。
+1. **Define intent**: what to build, the trade-offs, the taste (`shape`).
+2. **Collect results**: judgments outside the acceptance criteria (product feel, UX), plus signing off approval gates (`review` + approval).
+3. **Fix the harness, not the output**: an agent that fails repeatedly, or keeps asking the same class of question, signals a gap in context or verification; the right move is to patch the harness so it doesn't recur.
