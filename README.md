@@ -7,9 +7,15 @@ Turn your repo into a place where any agent can cold-start, understand the task,
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![skills.sh](https://skills.sh/b/initxy/initxy-skills)](https://skills.sh/initxy/initxy-skills)
 
+Clone and drop the skill folders into your agent's skills directory (Claude Code shown):
+
 ```bash
-npx skills add initxy/initxy-skills
+git clone https://github.com/initxy/initxy-skills
+mkdir -p ~/.claude/skills
+cp -r initxy-skills/skills/*/*/ ~/.claude/skills/
 ```
+
+Use `.claude/skills/` for a single project, or copy only the folders you want (e.g. `initxy-skills/skills/ai-native-engineering/shape`). Update later with `git pull` and re-copy.
 
 ## Why it's different
 
@@ -100,7 +106,7 @@ Skills are split into two folders by purpose:
 - `skills/ai-native-engineering/` — the engineering line: `init-harness`, `shape`, `review`, `gc`.
 - `skills/self/` — everyday tools: `handoff`, `translate-zh`, `write-zh`.
 
-Each skill is a `<name>/SKILL.md` under its category, in skills.sh / Agent Skills format. Most are single-file; `init-harness` and `write-zh` split their spec and templates into a sibling `references/` directory, referenced on demand.
+Each skill is a `<name>/SKILL.md` under its category, in Agent Skills format. Most are single-file; `init-harness` and `write-zh` split their spec and templates into a sibling `references/` directory, referenced on demand.
 
 ## License
 

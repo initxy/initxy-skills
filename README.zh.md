@@ -7,9 +7,15 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![skills.sh](https://skills.sh/b/initxy/initxy-skills)](https://skills.sh/initxy/initxy-skills)
 
+克隆下来，把 skill 文件夹拷进你的 agent 的 skills 目录（以 Claude Code 为例）：
+
 ```bash
-npx skills add initxy/initxy-skills
+git clone https://github.com/initxy/initxy-skills
+mkdir -p ~/.claude/skills
+cp -r initxy-skills/skills/*/*/ ~/.claude/skills/
 ```
+
+只装进某个项目就用 `.claude/skills/`；只装部分就单独拷对应文件夹（如 `initxy-skills/skills/ai-native-engineering/shape`）。以后 `git pull` 后重拷即可更新。
 
 ## 和别的 skill 有什么不一样
 
@@ -100,7 +106,7 @@ skill 按用途分两个文件夹：
 - `skills/ai-native-engineering/`：工程主线，`init-harness`、`shape`、`review`、`gc`。
 - `skills/self/`：日常工具，`handoff`、`translate-zh`、`write-zh`。
 
-每个 skill 在各自分类下的 `<name>/SKILL.md`，符合 skills.sh / Agent Skills 格式。多数单文件；`init-harness` 和 `write-zh` 把规范、模板拆进同目录 `references/`，主文件按需引用。
+每个 skill 在各自分类下的 `<name>/SKILL.md`，符合 Agent Skills 格式。多数单文件；`init-harness` 和 `write-zh` 把规范、模板拆进同目录 `references/`，主文件按需引用。
 
 ## License
 
