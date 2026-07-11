@@ -79,14 +79,18 @@ No `implement` skill: "follow the spec, run the gates, call it done" lives in th
 `init-harness` drops these slots into the target repo (full spec: [harness.md](skills/ai-native-engineering/init-harness/references/harness.md)):
 
 ```
-AGENTS.md              # single thin entry point: task flow, gates, language
+AGENTS.md              # single thin entry point: task flow, verbs, gates, language
 CONTEXT.md             # domain concepts, system boundaries, glossary ("why", not "what is")
 docs/adr/              # long-term decisions with status (accepted / superseded)
 docs/specs/            # one spec per task: proposed → active → done → archive/
-scripts/ or Makefile   # standard verbs: dev / test / lint / build / e2e / release
+scripts/ or Makefile   # standard verbs: dev / test / lint / build / e2e / check / release
+docs/releasing.md      # release runbook — when the project publishes something
+CONTRIBUTING.md        # contributor surface (+ PR template) — when outside contributors are expected
 ```
 
-The definition of done is one line: **every acceptance criterion met, and all automated gates green.** Irreversible actions — release, data migration, data deletion — sit behind an approval gate a human must clear.
+The definition of done is one line: **every acceptance criterion met, and all automated gates green.** `check` runs every automated gate in one command, and CI runs the same command — local green means CI green, one feedback loop for the maintainer, contributors, and their agents. Irreversible actions — release, data migration, data deletion — sit behind an approval gate a human must clear; releasing follows a runbook concrete enough that the agent does everything except the sign-off.
+
+For repos with outside contributors, `AGENTS.md` stays self-contained (steps a bare agent can follow — no private skills or setup), and `CONTRIBUTING.md` carries an AI-contribution policy that's welcoming but accountable: agent-written PRs are first-class, every PR has a human owner who understands the change, and every PR states how it was verified.
 
 Every slot follows a common convention rather than a private format: `AGENTS.md` is the de-facto standard; specs and ADRs are plain Markdown. A repo you initialize reads as AI-native to any agent tool, not locked to this set.
 

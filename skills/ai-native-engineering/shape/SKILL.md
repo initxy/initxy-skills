@@ -40,7 +40,7 @@ Whenever a decision settles during the interview, record it in place: new domain
 
 Enter this step only when every item under "When the interview is done" holds. Write the spec per the harness convention:
 
-- Path `docs/specs/<YYYY-MM-DD>-<slug>.md`, format per the repo's `docs/specs/TEMPLATE.md`. When the repo has no template: frontmatter carries `status` and `created`, body follows Goal / Non-goals / Context / Decisions / Plan / Acceptance criteria / Risks / Progress log.
+- Path `docs/specs/<YYYY-MM-DD>-<slug>.md`, format per the repo's `docs/specs/TEMPLATE.md`. When the repo has no template: frontmatter carries `status` and `created`, body follows Goal / Non-goals / Context / Decisions / Plan (a checkbox task list, in dependency order) / Acceptance criteria / Risks / Progress log.
 - Mark it `active` if implementation starts right after the interview; mark it `proposed` if it's queued for later.
 - A small task can be output in the conversation only, not written to disk.
 - Slug in English (kebab-case).

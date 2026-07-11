@@ -79,14 +79,18 @@ init-harness  ·  一次性铺底（新仓库、存量仓库走同一入口）
 `init-harness` 在目标仓库落下这些槽位（完整规范见 [harness.md](skills/ai-native-engineering/init-harness/references/harness.md)）：
 
 ```
-AGENTS.md             # 唯一入口，保持薄：任务流、门禁、语言
+AGENTS.md             # 唯一入口，保持薄：任务流、动词、门禁、语言
 CONTEXT.md            # 领域概念、系统边界、术语表（现状以代码为准，文档只讲「为什么」）
 docs/adr/             # 长期决策，带 status（accepted / superseded）
 docs/specs/           # 每任务一份 spec：proposed → active → done → archive/
-scripts/ 或 Makefile   # 标准动词：dev / test / lint / build / e2e / release
+scripts/ 或 Makefile   # 标准动词：dev / test / lint / build / e2e / check / release
+docs/releasing.md     # 发布手册——项目有发布物才铺
+CONTRIBUTING.md       # 贡献者门面（含 PR 模板）——预期有外部贡献者才铺
 ```
 
-完成的定义只有一条：**spec 验收标准逐条满足，且自动门禁全绿**。release、数据迁移、删数据这类不可逆动作另设审批门禁，必须人放行。
+完成的定义只有一条：**spec 验收标准逐条满足，且自动门禁全绿**。`check` 一条命令跑完全部自动门禁，CI 跑的也是同一条——本地绿即 CI 绿，维护者、贡献者和他们的 agent 共用一条反馈回路。release、数据迁移、删数据这类不可逆动作另设审批门禁，必须人放行；发布照手册走，手册写到 agent 能执行除签字外的每一步。
+
+有外部贡献者的仓库，`AGENTS.md` 保持自洽（裸 agent 照着步骤就能走，不引用任何私有 skill 或环境），`CONTRIBUTING.md` 带一段「欢迎但问责」的 AI 贡献政策：agent 写的 PR 是一等公民，但每个 PR 要有一个读懂改动的人类负责人，并写明怎么验证的。
 
 这些槽位都贴通用约定，不发明私有格式：`AGENTS.md` 是事实标准，spec 和 ADR 都是普通 Markdown。初始化出来的项目对任何 agent 工具都是 AI native 的，不锁死在这套 skill 上。
 

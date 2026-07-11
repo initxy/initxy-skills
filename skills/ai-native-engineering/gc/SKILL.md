@@ -20,7 +20,7 @@ When the user doesn't specify, judge from the trigger context and state which sc
 
 ### 1. Reconcile (execute directly, gate-protected)
 
-- Move `done`-but-unarchived specs in `docs/specs/` into `archive/`; flag long-stale `active` / `proposed` ones for the user, don't delete on your own.
+- Move `done`-but-unarchived specs in `docs/specs/` into `archive/`; flag long-stale `active` / `proposed` ones (including stale claims — an `owner` whose Progress log has gone quiet) for the user, don't delete on your own.
 - Reconcile `CONTEXT.md` against code entry by entry: code is the single source of truth for "what is"; where they don't match, fix the doc.
 - Mark ADRs overturned by newer decisions `superseded`, don't delete.
 - Dead code, references to deleted files, stale TODOs: only counts once the full automated gate suite is green after removal.
