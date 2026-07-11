@@ -72,7 +72,7 @@ No `implement` skill: "follow the spec, run the gates, call it done" lives in th
 |---|---|---|
 | `handoff` | Compresses the current conversation and progress into a handoff note so the next session continues. | Handing off, resuming, summarizing progress |
 | `translate-zh` | English → Chinese, producing idiomatic Simplified Chinese rather than a literal gloss; preserves structure and term consistency. | Translating English docs / Markdown / email |
-| `write-zh` | Guided Chinese writing, section by section — de-AI'd, diagram-rich. | When you want to be guided through writing, not one-shot generation |
+| `write-zh` | Guided Chinese writing: interviews out your real material, drafts section by section with every claim traced to material, finishes with a cold read — de-AI'd, diagram-rich. | When you want to be guided through writing, not one-shot generation |
 
 ## What the harness lays down
 

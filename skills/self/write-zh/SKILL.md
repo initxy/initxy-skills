@@ -1,6 +1,6 @@
 ---
 name: write-zh
-description: Guides the user through writing a Chinese document section by section — clarifying intent, co-defining an outline, drafting each part, embedding diagrams, and enforcing a personal first-principles voice — to produce diagram-rich prose free of AI-flavored writing. Use when the user wants to write, draft, or co-author a Chinese article, blog post, essay, design doc, README, or long-form document with guidance instead of one-shot generation.
+description: Guides the user through writing a Chinese document section by section — interviewing out real material, clarifying intent, co-defining an outline, drafting each part with every claim traced to material, restructuring when drafting exposes gaps, and cold-reading as the target reader — to produce diagram-rich, first-principles prose free of AI-flavored writing. Use when the user wants to write, draft, or co-author a Chinese article, blog post, essay, design doc, README, or long-form document with guidance instead of one-shot generation.
 ---
 
 # 引导式中文写作
@@ -9,7 +9,9 @@ description: Guides the user through writing a Chinese document section by secti
 
 好文档不是把要点填进模板,而是把一个问题想透之后,自然长出来的结构。
 
-所以这个 skill 的动作是「引导用户想透 + 帮他落笔」,不是「替他生成一篇」。一句话喂进去吐出整篇,正是 AI 味的根源。
+素材是第一瓶颈:文章的不可替代性,全部来自只有作者有的东西——亲历、数据、判断。这些恰是模型没有的,所以要先挖出来,再落笔。
+
+所以这个 skill 的动作是「引导用户想透 + 帮他落笔」,不是「替他生成一篇」。一句话喂进去吐出整篇,正是 AI 味的根源:立意、素材、结构、措辞被压扁成一步,每一步都取了平均值。
 
 ## 子文件
 
@@ -24,34 +26,60 @@ description: Guides the user through writing a Chinese document section by secti
 - 主打:有想法密度的技术/思考长文、博客、随笔。也能写设计文档、README、提案。
 - 两个入口:
   - **从零写**:走下面完整三阶段。
-  - **已有草稿**:跳过阶段一,直接进阶段三(去 AI 味 + 风格 + 配图),需要时再回头补结构。
+  - **已有草稿**:跳过阶段一,直接进阶段三(冷读 + 去 AI 味 + 风格 + 配图),需要时再回头补结构、补素材。
 
 ## 工作方式
 
-逐节推进,中等颗粒度。不一次代写整篇,也不做「每节抛一堆选项让用户勾选」的重流程。
+逐节推进,中等颗粒度,允许回撤。不一次代写整篇,也不做「每节抛一堆选项让用户勾选」的重流程。
 
-### 阶段一 · 摸意图、第一性拆解、共定大纲
+### 阶段一 · 访谈挖素材、定立意、共定大纲
 
-先问清楚,一次只问一个,等回答再问下一个:
+素材分三类,来源不同,处理也不同:
 
-- 写给谁?他们读完应该改变什么:知道什么、相信什么、会做什么?
-- 手里有哪些真材料:数据、亲历、代码、踩过的坑、明确的观点?
-- 有没有目标平台、篇幅、格式上的约束?用哪种风格(默认底色,还是 `styles.md` 里某一种)?
+| 类型 | 例子 | 怎么来 | 角色 |
+|---|---|---|---|
+| 脑内材料 | 亲历、踩过的坑、判断、立场 | 只能访谈问出来 | 主素材,立意从这里长 |
+| 外部材料 | 文档、链接、代码、数据 | 用户直接给,读掉入库 | 证据库,不当内容源 |
+| 缺口材料 | 缺的数字、引用、对比 | 大纲定型后反推 | 用户补,或联网搜 |
 
-再做第一性拆解:把题目拆到不能再拆的基本事实和硬约束,从这些往上推,而不是先套一个现成结论或别人的框架。
+**先访谈,后收料**:先收文档,注意力会被文档锚定,写出来就是文献综述。访谈一次只问一个,等回答再问下一个,从里面挖:
 
-共定大纲后,落成 `.md` 骨架,每个小节一个标题加占位,作为逐节填充的脚手架。
+- 触发:什么事让你现在想写这篇?具体事件比抽象观点值钱。
+- 具体化:把抽象说法还原成一个场景——当时发生了什么,你怎么反应的?
+- 分歧:这个话题上,你和主流看法哪里不一样?
+- 转折:有没有改变过想法?之前信什么,什么打破了它?
+- 数字:有没有能量化的东西?粗糙估计也行。
+- 读者:写给谁?读完应该改变什么——知道什么、相信什么、会做什么?
+- 约束:目标平台、篇幅、格式?用哪种风格(默认底色,还是 `styles.md` 里某一种)?
+
+再收外部材料,然后做第一性拆解:把题目拆到不能再拆的基本事实和硬约束,从这些往上推,而不是先套一个现成结论或别人的框架。
+
+共定大纲后,落成两个并排的文件:
+
+- 大纲骨架 `.md`:每个小节一个标题加占位,作为逐节填充的脚手架。
+- 素材文件 `material.md`:访谈挖出的和外部收来的,逐条编号,注明来源。
+
+最后拿大纲反推缺口:哪个论点还缺证据,列成清单——用户能补的再挖一轮,没有的联网去搜。
 
 ### 阶段二 · 逐节推进
 
 从最不确定的小节先写,通常是核心论点;开头和概述留到最后。对每个小节:
 
-1. 先问这节的核心要点和素材,用户可以简答或丢一段过来。
+1. 先从 `material.md` 里找这节能用的素材;不够就问用户要,新挖到的补进素材文件。
 2. 起草这节。起草前先把 `references/techniques.md` 过一遍,落笔就用上;同时套用下面「风格」「配图」的规则,并对照 `references/de-ai.md` 不犯常见 tell。
 3. 用户提修改,用 Edit 局部更新文件,不重印全文。
 
-### 阶段三 · 通读收尾
+硬规则:**每个论点必须能指到 `material.md` 里一条具体素材**。指不到的,要么回去补素材,要么砍掉——这条同时挡住空转和编造。
 
+起草会暴露大纲的洞,这是写作在正常工作,不是失败。出现以下信号就回撤,先改大纲再继续,不硬着头皮往下填:
+
+- 某个论点指不到素材,补也补不出来。
+- 两个小节写着写着在说同一件事。
+- 某节里长出了比原大纲更有力的主线。
+
+### 阶段三 · 冷读收尾
+
+- 先冷读:切换成目标读者——不知道任何背景的那个人——从头读一遍,标出每个「这里我跟丢了」的位置:没铺垫就出现的概念、跳步的推理、只有作者才懂的指代。逐个修掉。
 - 用 `references/de-ai.md` 的速查清单整篇扫一遍。
 - 查风格是否前后统一(同一篇别一段科普一段硬核地跳)。
 - 查图够不够、贴不贴、标签是否具体。
@@ -102,6 +130,8 @@ description: Guides the user through writing a Chinese document section by secti
 也是 `review` 的验收口径:
 
 - 第一性结构成立:核心论点是从事实和约束推出来的,不是套来的。
+- 论点可溯:每个论点都指得到 `material.md` 里一条素材,没有空转和编造。
+- 冷读通过:目标读者从头读到尾不跟丢,概念都有铺垫,推理不跳步。
 - `de-ai.md` 速查清单全过,没有残留 tells。
 - 核心概念都有图,图贴切、标签具体。
 - 风格统一:整篇一种主声音;默认底色则第一性为主、传统点缀不过量。
